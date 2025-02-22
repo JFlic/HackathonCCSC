@@ -71,7 +71,7 @@
   }
   
   .auth-form button:hover {
-    background-color: #0056b3;
+    background-color: #e04b2f;
   }
   
   /* ✅ Error & Success Messages */
@@ -102,7 +102,7 @@
   }
   
   .toggle-btn:hover {
-    color: #0056b3;
+    color: #e04b2f;
   }
   
   /* ✅ Responsive Design */
