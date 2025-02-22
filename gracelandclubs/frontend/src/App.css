@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+    background-color: #fef4ea; /* Set the entire page background to white */
+    margin: 0;
+    font-family: Arial, sans-serif;
+    /* Add any other global styles you need */
+}
