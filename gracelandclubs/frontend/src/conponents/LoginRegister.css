@@ -1,0 +1,123 @@
+/* ✅ Login & Registration Form Styling */
+.auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #000000;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* ✅ Title */
+  .auth-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* ✅ Form Inputs */
+  .auth-form input,
+  .auth-form select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: 0.3s;
+  }
+  
+  /* ✅ Input Focus Effect */
+  .auth-form input:focus,
+  .auth-form select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* ✅ Checkboxes */
+  .checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+  }
+  
+  .checkbox-group label {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox-group input {
+    margin-right: 5px;
+  }
+  
+  /* ✅ Buttons */
+  .auth-form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .auth-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* ✅ Error & Success Messages */
+  .auth-message {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .auth-message.error {
+    color: red;
+  }
+  
+  .auth-message.success {
+    color: green;
+  }
+  
+  /* ✅ Toggle Button */
+  .toggle-btn {
+    background: none;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 14px;
+    text-decoration: underline;
+    transition: 0.3s;
+  }
+  
+  .toggle-btn:hover {
+    color: #0056b3;
+  }
+  
+  /* ✅ Responsive Design */
+  @media (max-width: 500px) {
+    .auth-container {
+      width: 90%;
+      padding: 20px;
+    }
+  
+    .auth-form input,
+    .auth-form select {
+      font-size: 14px;
+    }
+  
+    .auth-form button {
+      font-size: 14px;
+    }
+  }
+  
