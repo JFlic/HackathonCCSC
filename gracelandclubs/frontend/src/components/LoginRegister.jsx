@@ -8,12 +8,7 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
     email: "",
     password: "",
     password2: "",
-    age: 25,
-    weight: 70,
-    height: 175,
-    vegan: false,
-    vegetarian: false,
-    activity_level: "Moderately Active",
+    clubName: "",
   });
   const [message, setMessage] = useState("");
 
@@ -43,12 +38,7 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
         email: formData.email.trim(),
         password: formData.password,
         password2: formData.password2,
-        age: Number(formData.age) || null, // Ensure valid number
-        weight: Number(formData.weight) || null,
-        height: Number(formData.height) || null,
-        vegan: Boolean(formData.vegan), // Ensure boolean values
-        vegetarian: Boolean(formData.vegetarian),
-        activity_level: formData.activity_level,
+        clubName: formData.clubName
       };
     } else {
       requestBody = {
@@ -115,6 +105,7 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
           onChange={handleChange}
           required
         />
+        
         {isRegister && (
           <>
             <input
@@ -125,74 +116,14 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
               onChange={handleChange}
               required
             />
-
-            {/* ✅ Age Input */}
-            <label>Age:</label>
             <input
-              type="number"
-              name="age"
-              min="18"
-              max="100"
-              value={formData.age}
-              onChange={handleChange}
-              required
-            />
-
-            {/* ✅ Weight Input */}
-            <label>Weight (kg):</label>
-            <input
-              type="number"
-              name="weight"
-              min="40"
-              max="150"
-              value={formData.weight}
-              onChange={handleChange}
-              required
-            />
-
-            {/* ✅ Height Input */}
-            <label>Height (cm):</label>
-            <input
-              type="number"
-              name="height"
-              min="140"
-              max="210"
-              value={formData.height}
-              onChange={handleChange}
-              required
-            />
-
-            {/* ✅ Vegan & Vegetarian Checkboxes */}
-            <div className="checkbox-group">
-              <label>
-                <input
-                  type="checkbox"
-                  name="vegan"
-                  checked={formData.vegan}
-                  onChange={handleChange}
-                />
-                Vegan
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="vegetarian"
-                  checked={formData.vegetarian}
-                  onChange={handleChange}
-                />
-                Vegetarian
-              </label>
-            </div>
-
-            {/* ✅ Activity Level Selector */}
-            <label>Activity Level:</label>
-            <select name="activity_level" value={formData.activity_level} onChange={handleChange}>
-              <option value="Sedentary">Sedentary (Little to no exercise)</option>
-              <option value="Lightly Active">Lightly Active (1-3 days per week)</option>
-              <option value="Moderately Active">Moderately Active (3-5 days per week)</option>
-              <option value="Very Active">Very Active (6-7 days per week)</option>
-              <option value="Super Active">Super Active (Intense exercise every day)</option>
-            </select>
+            type="clubName"
+            name="clubName"
+            placeholder="Name Your Club"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
           </>
         )}
 
