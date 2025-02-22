@@ -117,13 +117,13 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
               required
             />
             <input
-            type="clubName"
-            name="clubName"
-            placeholder="Name Your Club"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+              type="text"
+              name="clubName"
+              placeholder="Name Your Club"
+              value={formData.clubName}
+              onChange={handleChange}
+              required
+            />
           </>
         )}
 
