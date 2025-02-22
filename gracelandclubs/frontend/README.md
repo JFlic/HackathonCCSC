@@ -10,6 +10,6 @@ Currently, two official plugins are available:
 # Color schema
 
 Main orange #fa5c35
-Background:   #faf4ec
+Background:   #fef4ea
 Text: #3d566b
 subtle Text: #51c7c9
