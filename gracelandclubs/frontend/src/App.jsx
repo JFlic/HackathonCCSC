@@ -1,7 +1,7 @@
-import { useState } from 'react'
-
-import './App.css'
+import { useState, useEffect } from "react"; // ✅ Added missing import
+import "./App.css";
 import LoginRegister from "./components/LoginRegister"; // Login Page
+import Dashboard from "./components/Dashboard"; // ✅ Import Dashboard component
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,14 +22,13 @@ function App() {
   return (
     <div>
       {/* Conditional Rendering Based on Authentication & Navigation */}
-      {currentPage === "login" && <LoginRegister checkAuth={checkAuth} setCurrentPage={setCurrentPage} />}
-      {currentPage === "dashboard" && <Dashboard checkAuth={checkAuth} setCurrentPage={setCurrentPage} />}
-      {currentPage === "main" && (
-        <>
-          <MainMenu />
-          <QueryForm />
-        </>
+      {currentPage === "login" && (
+        <LoginRegister checkAuth={checkAuth} setCurrentPage={setCurrentPage} />
       )}
+      {currentPage === "dashboard" && (
+        <Dashboard checkAuth={checkAuth} setCurrentPage={setCurrentPage} />
+      )}
+
     </div>
   );
 }
