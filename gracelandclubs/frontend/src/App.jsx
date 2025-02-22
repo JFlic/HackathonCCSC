@@ -13,6 +13,7 @@ function App() {
     setIsAuthenticated(!!token); // Updates based on token presence
     setCurrentPage(token ? "dashboard" : "login"); // Redirect to correct page
   };
+  console.log("Current Page:", currentPage);
 
   // ✅ Run checkAuth when the component mounts
   useEffect(() => {
@@ -21,7 +22,6 @@ function App() {
 
   return (
     <div>
-      {/* Conditional Rendering Based on Authentication & Navigation */}
       {currentPage === "login" && (
         <LoginRegister checkAuth={checkAuth} setCurrentPage={setCurrentPage} />
       )}
