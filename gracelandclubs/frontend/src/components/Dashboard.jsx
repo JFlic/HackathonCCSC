@@ -118,8 +118,10 @@ const Dashboard = ({ setCurrentPage }) => {
                 <div
                   className="shortcut-card"
                   onClick={() => setActivePage("Account")}
-                >
+>
+
                   <ClubFinance
+                  setActivePage={setActivePage}
                     totalFund={totalFund}
                     currentFund={currentFund}
                     purchases={financeData.purchases}
