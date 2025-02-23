@@ -96,30 +96,65 @@ const Dashboard = ({ setCurrentPage }) => {
     switch (activePage) {
       case "Home":
         return (
-          <div className="dashboard-home">
-            <div className="dashboard-main-column">
-              <LeaderIntro />
-              <div className="dashboard-calendar">
-                <Calendar
-                  preview
-                  selectedDay={selectedCalendarDay}
-                  onDaySelect={setSelectedCalendarDay}
-                />
+          <div>
+            <UserBanner
+              user={user}
+              setSelectedClub={setSelectedClub}
+              setActivePage={setActivePage}
+            />
+            <div className="dashboard-home">
+              <div className="dashboard-main-column">
+                <LeaderIntro />
+                <div className="dashboard-calendar">
+                  <Calendar
+                    preview
+                    selectedDay={selectedCalendarDay}
+                    onDaySelect={setSelectedCalendarDay}
+                  />
+                </div>
+                <Email />
               </div>
-              <Email />
-            </div>
-            <div className="dashboard-side-components">
-              <div
-                className="shortcut-card"
-                onClick={() => setActivePage("Account")}
-              >
-                <ClubFinance
-                  totalFund={totalFund}
-                  currentFund={currentFund}
-                  purchases={financeData.purchases}
-                  preview
-                />
+              <div className="dashboard-side-components">
+                <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("Account")}
+>
+
+                  <ClubFinance
+                  setActivePage={setActivePage}
+                    totalFund={totalFund}
+                    currentFund={currentFund}
+                    purchases={financeData.purchases}
+                    preview
+                  />
+                </div>
+
               </div>
+              {selectedCalendarDay && (
+                <div className="day-modal-overlay animate-fadeIn">
+                  <div className="day-modal-container animate-slideUp">
+                    <button
+                      className="close-button"
+                      onClick={() => setSelectedCalendarDay(null)}
+                    >
+                      X
+                    </button>
+                    <h2>
+                      {`Day ${selectedCalendarDay.date.getDate()} - ${selectedCalendarDay.date.toLocaleDateString()}`}
+                    </h2>
+                    <p>No events for this day.</p>
+                    <button
+                      onClick={() => {
+                        setCalendarPrepopulatedDay(selectedCalendarDay);
+                        setSelectedCalendarDay(null);
+                        setActivePage("Calendar");
+                      }}
+                    >
+                      Add Event
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );
