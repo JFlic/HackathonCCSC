@@ -1,63 +1,67 @@
 .club-finance {
-    border: 1px solid #ccc;
+    width: 100%;
     padding: 20px;
+    background-color: #fef4ea;
     border-radius: 8px;
-    background-color: #fafafa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 20px;
-    text-align: left;
-  }
+}
   
-  .club-finance h2,
-  .club-finance h3 {
+.club-finance h2,
+.club-finance h3 {
     margin-top: 0;
-  }
+    text-decoration: underline;
+}
   
-  .fund-amount {
+.fund-amount {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 15px;
-  }
+    border: 2px solid #fa5c35;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fa5c35;
+    color: #ffffff;
+}
   
-  .purchase-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+.purchase-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
   
-  .purchase-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s;
-    cursor: pointer;
-  }
+.purchase-item {
+
+    padding: 15px;
+    border-radius: 4px;
+    transition: 0.3s;
+}
   
-  .purchase-item:hover {
+.purchase-item:hover {
     background-color: #f0f0f0;
-  }
+    transform: translateX(5px);
+}
   
-  .purchase-name {
+.purchase-name {
     flex: 2;
     font-weight: bold;
-  }
+}
   
-  .purchase-amount {
+.purchase-amount {
     flex: 1;
     text-align: right;
     margin-right: 10px;
-  }
+}
   
-  .purchase-date {
+.purchase-date {
     flex: 1;
     text-align: right;
     color: #666;
-  }
-  .club-dashboard {
+}
+.club-dashboard {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
     background-color: #fff;
-  }
+}

@@ -13,7 +13,12 @@ body {
 }
 
 .content {
-  padding: 40px 60px;
+  margin-left: 250px;
+  padding: 20px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: #f7f7f7;
 }
 
 /* FADE ANIMATIONS */
@@ -44,14 +49,25 @@ body {
   color: white;
   transition: 0.3s linear;
   margin-bottom: 20px;
+  width: 100%;
+}
+
+.sidebar__button:hover {
+  background-color: #e04b2f;
 }
 
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
   min-width: 250px;
+  height: 100vh;
   background: #fa5c35;
   padding: 20px;
   color: white;
   transition: 0.4s ease-in;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
 .sidebar-closed {
@@ -64,14 +80,22 @@ ul {
 }
 
 .sidebar__listItem {
-  margin: 30px 10px;
+  margin: 20px 0;
+  padding: 10px;
   display: flex;
-  height: 20px;
+  align-items: center;
   cursor: pointer;
+  transition: 0.3s;
+  border-radius: 4px;
+}
+
+.sidebar__listItem:hover {
+  background-color: #e04b2f;
 }
 
 .sidebar__listItem span {
   white-space: nowrap;
+  text-decoration: underline;
 }
 
 .sidebar__icon {

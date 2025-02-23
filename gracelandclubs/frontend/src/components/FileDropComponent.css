@@ -1,26 +1,24 @@
 .file-drop-container {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
     padding: 20px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-  }
+    box-sizing: border-box;
+}
   
-  .file-drop-area {
-    border: 2px dashed #ccc;
+.file-drop-area {
+    border: 2px dashed #fa5c35;
     border-radius: 8px;
     padding: 40px;
+    background-color: rgba(250, 92, 53, 0.05);
     position: relative;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
-  }
+    transition: all 0.3s;
+}
   
-  .file-drop-area.drag-over {
-    border-color: #0066cc;
-    background-color: #f0f8ff;
-  }
+.file-drop-area:hover {
+    background-color: rgba(250, 92, 53, 0.1);
+}
   
-  .file-input {
+.file-input {
     opacity: 0;
     position: absolute;
     width: 100%;
@@ -28,29 +26,28 @@
     top: 0;
     left: 0;
     cursor: pointer;
-  }
+}
   
-  .file-preview {
+.file-preview {
+    width: 100%;
+    max-width: none;
     margin-top: 20px;
-    max-width: 800px; /* Increase the container width */
-    margin-left: auto;
-    margin-right: auto;
-    /* Optionally, add a border or shadow to visually separate it */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-  }
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
   
-  .file-preview img {
+.file-preview img {
     width: 100%;
     height: auto;
     max-height: 600px; /* Increase max height for a larger preview */
     object-fit: contain;
     border: none; /* Remove extra border if using container border */
     border-radius: 4px;
-  }
+}
   
-  .file-preview-text {
+.file-preview-text {
     margin-top: 20px;
     text-align: left;
     background: #f7f7f7;
@@ -58,10 +55,10 @@
     border-radius: 4px;
     max-height: 300px;
     overflow: auto;
-  }
+}
   
-  /* Styles for the docx-preview container */
-  .docx-preview-container {
+/* Styles for the docx-preview container */
+.docx-preview-container {
     margin-top: 20px;
     text-align: left;
     background: #f7f7f7;
@@ -71,10 +68,9 @@
     overflow: auto;
     position: relative;
     z-index: 1; /* lower than your modal */
-  }
+}
   
-  
-  button {
+button {
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 16px;
@@ -84,22 +80,22 @@
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
+}
   
-  button:hover {
+button:hover {
     background-color: #218838;
-  }
+}
   
-  .error {
+.error {
     color: red;
-  }
+}
   
-  .corrections {
+.corrections {
     margin-top: 20px;
     text-align: left;
     background: #f7f7f7;
     padding: 15px;
     border-radius: 4px;
     overflow-x: auto;
-  }
+}
   
