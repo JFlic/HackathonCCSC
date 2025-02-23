@@ -1,0 +1,113 @@
+.calendar-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .calendar-controls button {
+    padding: 8px 12px;
+    margin: 0 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background-color: #0066cc;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .calendar-controls button:hover {
+    background-color: #004d99;
+  }
+  
+  .calendar-controls span {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .show-event-form-button {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .show-event-form-button:hover {
+    background-color: #218838;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  
+  .weekday-header {
+    text-align: center;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  .calendar-day {
+    min-height: 100px;
+    background-color: #f7f7f7;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  
+  .calendar-day-number {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .current-month {
+    color: #333;
+  }
+  
+  .other-month {
+    color: #aaa;
+    cursor: default;
+  }
+  
+  .calendar-events {
+    margin-top: auto;
+  }
+  
+  .calendar-event {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .calendar-event p {
+    margin: 5px 0 0;
+    font-size: 12px;
+  }
+  

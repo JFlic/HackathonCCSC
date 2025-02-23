@@ -1,140 +1,122 @@
-import React, { useState } from "react";
-import "./LoginRegister.css"; // ✅ Import the new CSS file
+import React, { useState, useEffect } from "react";
+import "./Dashboard.css";
+import Sidebar from "./Sidebar";
 
-const LoginRegister = ({ checkAuth, setCurrentPage }) => {
-  const [isRegister, setIsRegister] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    password2: "",
-    clubName: "",
-  });
-  const [message, setMessage] = useState("");
+const API_BASE_URL = "http://127.0.0.1:8000/api"; // Adjust as needed
 
-  // ✅ Toggle Between Register & Login
-  const toggleForm = () => {
-    setIsRegister(!isRegister);
-    setMessage(""); // Clear messages
-  };
-
-  // ✅ Handle Form Input Changes
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
-  };
-
-  const API_BASE_URL = "http://127.0.0.1:8000/api"; // ✅ Fixed extra space in URL
-
-  // ✅ Handle Form Submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const url = isRegister ? `${API_BASE_URL}/register/` : `${API_BASE_URL}/login/`;
-
-    let requestBody;
-    if (isRegister) {
-      requestBody = {
-        username: formData.username.trim(), // Ensure no trailing spaces
-        email: formData.email.trim(),
-        password: formData.password,
-        password2: formData.password2,
-        clubName: formData.clubName
-      };
-    } else {
-      requestBody = {
-        username: formData.username.trim(),
-        password: formData.password,
-      };
+// Mock data for development
+const mockUserData = {
+  id: 1,
+  username: "johndoe",
+  email: "johndoe@example.com",
+  age: 25,
+  activity_level: "Moderate",
+  weight: 175,
+  clubs: [
+    {
+      id: 101,
+      name: "Programming Club",
+      description: "A club for coding enthusiasts.",
+      imageurl: "https://example.com/programming_club.jpg"
+    },
+    {
+      id: 102,
+      name: "AI & Machine Learning",
+      description: "Exploring the world of AI.",
+      imageurl: "https://example.com/ai_club.jpg"
     }
+  ]
+};
 
-    try {
-      console.log("Sending JSON Payload:", JSON.stringify(requestBody)); // ✅ Log the request payload
+const items = ["Home", "About", "Services", "Contact"];
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+const Dashboard = ({ setCurrentPage }) => {
+  // Moved inside the component so hooks are used correctly
+  const [activeItem, setActiveItem] = useState("Home");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedClub, setSelectedClub] = useState(null);
 
-      const data = await response.json();
-      console.log("Response JSON:", data); // ✅ Log server response
+  const handleItemSelect = (item) => {
+    setActiveItem(item);
+  };
 
-      if (response.ok) {
-        if (!isRegister) {
-          localStorage.setItem("token", data.token.access);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          checkAuth();
-          setCurrentPage("dashboard");
-        }
-        setMessage("Success!");
-      } else {
-        setMessage(data.error || "Something went wrong.");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setCurrentPage("login");
+        return;
       }
-    } catch (error) {
-      setMessage("Server error. Try again.");
-    }
-  };
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/user/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          throw new Error("Failed to fetch user data");
+        }
+      } catch (err) {
+        console.warn("API request failed, using mock data...");
+        setUser(mockUserData); // Use mock data on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [setCurrentPage]);
+
+  if (loading) return <p className="loading-text">Loading...</p>;
 
   return (
-    <div className="auth-container">
-      <h2>{isRegister ? "Register" : "Login"}</h2>
-      <form className="auth-form" onSubmit={handleSubmit}>
-        {isRegister && (
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        )}
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        
-        {isRegister && (
-          <>
-            <input
-              type="password"
-              name="password2"
-              placeholder="Confirm Password"
-              value={formData.password2}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="text"
-              name="clubName"
-              placeholder="Name Your Club"
-              value={formData.clubName}
-              onChange={handleChange}
-              required
-            />
-          </>
-        )}
+    <div className="dashboard-container">
+      <Sidebar
+        items={items}
+        activeItem={activeItem}
+        onItemSelect={handleItemSelect}
+      />
+      <div className="dashboard-content">
+        <h2>Welcome, {user?.username}!</h2>
+        <div className="user-info">
+          <p>
+            <strong>Email:</strong> {user?.email}
+          </p>
+          <p>
+            <strong>Age:</strong> {user?.age}
+          </p>
+          <p>
+            <strong>Activity Level:</strong> {user?.activity_level}
+          </p>
+        </div>
 
-        <button type="submit">{isRegister ? "Register" : "Login"}</button>
-      </form>
-      {message && <p className="auth-message">{message}</p>}
-      <button className="toggle-btn" onClick={toggleForm}>
-        {isRegister ? "Already have an account? Login" : "Don't have an account? Register"}
-      </button>
+        <h3>Your Clubs:</h3>
+        <ul className="club-list">
+          {user?.clubs?.map((club) => (
+            <li key={club.id} onClick={() => setSelectedClub(club)}>
+              {club.name}
+            </li>
+          ))}
+        </ul>
+
+        {selectedClub && (
+          <div className="club-card">
+            <h3>{selectedClub.name}</h3>
+            <p>{selectedClub.description}</p>
+            <img src={selectedClub.imageurl} alt={selectedClub.name} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default LoginRegister;
+export default Dashboard;
