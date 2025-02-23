@@ -180,50 +180,33 @@ def search_nutrition_plans(request):
 @csrf_exempt
 def ask(request):
     """Process a question and generate an AI-based response"""
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid request method. Only POST allowed.'}, status=405)
+    if 'file' not in request.FILES:
+        return JsonResponse({'error': 'No file uploaded.'}, status=400)
 
+    file = request.FILES['file']
+    
     try:
-        if model is None or tokenizer is None:
-            return JsonResponse({"error": "Model or tokenizer failed to load."}, status=500)
+        # Example: Save file to disk or process directly
+        with open(file.name, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
 
-        # Parse JSON data
-        data = json.loads(request.body)
-        question = data.get("question")
-        """Efficiently search nutrition plans based on query parameters."""
-        query_params = request.GET.dict()  # Get query parameters as dictionary
-        valid_filters = {}  # Store valid filters
+        # Process the file as needed (for example, read from it if it's a text file)
+        if file.name.endswith('.txt'):
+            with open(file.name, 'r') as file_to_read:
+                text_data = file_to_read.read()
+                # Process text data, for example, use it with an AI model
+                # Assume 'model' and 'tokenizer' are preloaded and ready to use
+                input_ids = tokenizer(text_data, return_tensors="pt").input_ids
+                outputs = model.generate(input_ids)
+                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+                return JsonResponse({"answer": generated_text})
 
-        # Validate query parameters against model fields
-        model_fields = {field.name for field in NutritionPlan._meta.fields}  # Get valid field names
-        for key, value in query_params.items():
-            if key in model_fields:
-                valid_filters[f"{key}__iexact"] = value  # Case-insensitive match
-
-        # Apply filters dynamically (efficient filtering)
-        plans = NutritionPlan.objects.filter(**valid_filters).values()  # Return dicts directly
-
-        # Fetch data from SQL
-        sql_result = plans
-
-        # Check for SQL errors
-        if "error" in sql_result:
-            return JsonResponse({"error": sql_result["error"]}, status=400)
-
-        # Prepare input for the model
-        input_text = f"Here is the data:\n{sql_result}\n\nQuestion: {question}\nAnswer:"
-        input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to("cuda" if torch.cuda.is_available() else "cpu")
-
-        # Generate AI response
-        outputs = model.generate(input_ids, max_new_tokens=200, temperature=0.7, top_p=0.9, do_sample=True)
-        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-        return JsonResponse({"answer": generated_text})
+        return JsonResponse({'message': 'File processed successfully.'})
 
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
-
+        return JsonResponse({'error': str(e)}, status=500)
+    
 def execute_sql_query(request):
     """Execute SQL query and return structured JSON"""
     if request.method != 'POST':
@@ -297,3 +280,4 @@ class LoginView(APIView):
                 return Response({"user": user_data, "token": token}, status=status.HTTP_200_OK)
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
