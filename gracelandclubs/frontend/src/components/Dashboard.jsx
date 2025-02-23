@@ -6,6 +6,7 @@ import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
 import UserBanner from "./UserBanner";
 import LeaderIntro from "./LeaderIntro";
+import Email from "./Email";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -111,6 +112,7 @@ const Dashboard = ({ setCurrentPage }) => {
                     onDaySelect={setSelectedCalendarDay}
                   />
                 </div>
+                <Email />
               </div>
               <div className="dashboard-side-components">
                 <div
