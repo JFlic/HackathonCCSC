@@ -116,7 +116,7 @@ const Calendar = ({
 
   return (
     <div className={containerClass}>
-      <h1>Calendar</h1>
+      <h1>Event Calendar</h1>
       {/* Month Navigation */}
       <div className="calendar-controls">
         <button onClick={handlePrevMonth}>Previous</button>

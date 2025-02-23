@@ -5,6 +5,8 @@ import Sidebar from "./Sidebar";
 import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
 import UserBanner from "./UserBanner";
+import LeaderIntro from "./LeaderIntro";
+
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 const mockUserData = {
@@ -30,7 +32,7 @@ const mockUserData = {
   ],
 };
 
-const SIDEBAR_ITEMS = ["Home", "Calendar", "Finance", "File"];
+const SIDEBAR_ITEMS = ["Home", "Calendar", "Account", "File"];
 
 const Dashboard = ({ setCurrentPage }) => {
   const [financeData] = useState({
@@ -94,17 +96,16 @@ const Dashboard = ({ setCurrentPage }) => {
     switch (activePage) {
       case "Home":
         return (
-    <div>
+          <div>
             <UserBanner
               user={user}
               setSelectedClub={setSelectedClub}
               setActivePage={setActivePage}
             />
-        
-          <div className="dashboard-home">
-            <div className="shortcuts-container">
-              <div className="shortcut-column left">
-                <div className="shortcut-card">
+            <div className="dashboard-home">
+              <div className="dashboard-main-column">
+                <LeaderIntro />
+                <div className="dashboard-calendar">
                   <Calendar
                     preview
                     selectedDay={selectedCalendarDay}
@@ -112,10 +113,10 @@ const Dashboard = ({ setCurrentPage }) => {
                   />
                 </div>
               </div>
-              <div className="shortcut-column right">
+              <div className="dashboard-side-components">
                 <div
                   className="shortcut-card"
-                  onClick={() => setActivePage("Finance")}
+                  onClick={() => setActivePage("Account")}
                 >
                   <ClubFinance
                     totalFund={totalFund}
@@ -131,38 +132,37 @@ const Dashboard = ({ setCurrentPage }) => {
                   <FileDropComponent preview />
                 </div>
               </div>
-            </div>
-            {selectedCalendarDay && (
-              <div className="day-modal-overlay animate-fadeIn">
-                <div className="day-modal-container animate-slideUp">
-                  <button
-                    className="close-button"
-                    onClick={() => setSelectedCalendarDay(null)}
-                  >
-                    X
-                  </button>
-                  <h2>
-                    {`Day ${selectedCalendarDay.date.getDate()} - ${selectedCalendarDay.date.toLocaleDateString()}`}
-                  </h2>
-                  <p>No events for this day.</p>
-                  <button
-                    onClick={() => {
-                      setCalendarPrepopulatedDay(selectedCalendarDay);
-                      setSelectedCalendarDay(null);
-                      setActivePage("Calendar");
-                    }}
-                  >
-                    Add Event
-                  </button>
+              {selectedCalendarDay && (
+                <div className="day-modal-overlay animate-fadeIn">
+                  <div className="day-modal-container animate-slideUp">
+                    <button
+                      className="close-button"
+                      onClick={() => setSelectedCalendarDay(null)}
+                    >
+                      X
+                    </button>
+                    <h2>
+                      {`Day ${selectedCalendarDay.date.getDate()} - ${selectedCalendarDay.date.toLocaleDateString()}`}
+                    </h2>
+                    <p>No events for this day.</p>
+                    <button
+                      onClick={() => {
+                        setCalendarPrepopulatedDay(selectedCalendarDay);
+                        setSelectedCalendarDay(null);
+                        setActivePage("Calendar");
+                      }}
+                    >
+                      Add Event
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           </div>
         );
       case "Calendar":
         return <Calendar selectedDay={calendarPrepopulatedDay} />;
-      case "Finance":
+      case "Account":
         return (
           <ClubFinance
             totalFund={totalFund}
@@ -198,7 +198,6 @@ const Dashboard = ({ setCurrentPage }) => {
       <div className="dashboard-content">{renderContent()}</div>
     </div>
   );
-  
 };
 
 export default Dashboard;
