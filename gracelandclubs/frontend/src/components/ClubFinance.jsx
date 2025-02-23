@@ -135,9 +135,9 @@ const ClubFinance = ({ club = {}, preview = false, setActivePage }) => {
     return (
       <div
         className="club-finance-preview"
-        onClick={() => setActivePage && setActivePage("Account")} // Open the Account page on click
+        onClick={() => setActivePage && setActivePage("Budget")} // Open the Account page on click
       >
-        <h2>Club Account</h2>
+        <h2>Club Budget</h2>
         <div className="preview-fund-details">
           <div>
             <p className="fund-label">Starting Total</p>
