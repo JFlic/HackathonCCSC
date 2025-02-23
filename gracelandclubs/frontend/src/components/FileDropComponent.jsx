@@ -44,6 +44,9 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
 
   const processFile = (file) => {
     setFile(file);
+    setError(null);
+    setAnalysis(null);
+
     if (file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onloadend = () => setPreviewUrl(reader.result);
@@ -69,7 +72,10 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
   };
 
   const handleUpload = useCallback(async () => {
-    if (!file) return;
+    if (!file) {
+      setError("No file selected.");
+      return;
+    }
 
     setUploading(true);
     setError(null);
@@ -92,7 +98,10 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Upload failed: ${response.status}`);
+      }
 
       const data = await response.json();
       setAnalysis(data);
@@ -107,6 +116,7 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
   return (
     <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
       <h2>Drop your form below for AI Analysis</h2>
+      
       <div
         className={`file-drop-area ${dragOver ? "drag-over" : ""}`}
         onDragOver={handleDragOver}
@@ -128,20 +138,25 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
       {docxHtml && <div className="docx-preview-container" dangerouslySetInnerHTML={{ __html: docxHtml }} />}
 
       {error && <p className="error">Error: {error}</p>}
+      
       {analysis && (
         <div className="analysis-results">
           <h3>AI Analysis Report</h3>
           <h4>Issues:</h4>
           <ul>
-            {analysis.issues.map((issue, idx) => (
-              <li key={idx}>{issue}</li>
-            ))}
+            {analysis.issues && analysis.issues.length > 0 ? (
+              analysis.issues.map((issue, idx) => <li key={idx}>{issue}</li>)
+            ) : (
+              <li>No issues detected.</li>
+            )}
           </ul>
           <h4>Recommendations:</h4>
           <ul>
-            {analysis.recommendations.map((rec, idx) => (
-              <li key={idx}>{rec}</li>
-            ))}
+            {analysis.recommendations && analysis.recommendations.length > 0 ? (
+              analysis.recommendations.map((rec, idx) => <li key={idx}>{rec}</li>)
+            ) : (
+              <li>No recommendations provided.</li>
+            )}
           </ul>
         </div>
       )}

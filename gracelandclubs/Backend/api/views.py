@@ -310,6 +310,8 @@ class UserDetailView(APIView):
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+    
+
 class AnalyzeFormView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -321,35 +323,58 @@ class AnalyzeFormView(APIView):
         file_type = file.content_type
         content = file.read()
 
-        text = self.extract_text(content, file_type)
-        prompt = self.generate_prompt(text)
-
-        model, tokenizer = ModelLoader.get_model()
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-
-        with torch.no_grad():
-            outputs = model.generate(inputs["input_ids"], max_new_tokens=500, temperature=0.7, top_p=0.95, do_sample=True)
-
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
         try:
-            analysis = json.loads(response)
-        except json.JSONDecodeError:
-            analysis = {"issues": ["Error parsing model response"], "recommendations": ["Please try again"]}
+            text = self.extract_text(content, file_type)
+            if not text.strip():
+                return JsonResponse({'error': 'No text extracted from file.'}, status=400)
 
-        return JsonResponse(analysis)
+            prompt = self.generate_prompt(text)
+
+            # Load model and tokenizer
+            model, tokenizer = ModelLoader.get_model()
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+            with torch.no_grad():
+                outputs = model.generate(
+                    inputs["input_ids"],
+                    max_new_tokens=500,
+                    temperature=0.7,
+                    top_p=0.95,
+                    do_sample=True
+                )
+
+            response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+            try:
+                analysis = json.loads(response)  # ✅ Ensure valid JSON
+            except json.JSONDecodeError:
+                analysis = {
+                    "issues": ["Error parsing model response"],
+                    "recommendations": ["Please try again."]
+                }
+
+            return JsonResponse(analysis)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
     @staticmethod
     def extract_text(file_content: bytes, file_type: str) -> str:
         """Extract text from different file formats."""
-        if file_type == "application/pdf":
-            pdf_reader = PdfReader(io.BytesIO(file_content))
-            return " ".join(page.extract_text() for page in pdf_reader.pages if page.extract_text())
-        elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            doc = docx.Document(io.BytesIO(file_content))
-            return " ".join(paragraph.text for paragraph in doc.paragraphs)
-        return file_content.decode('utf-8')
-# --- SQL Query Execution ---
+        try:
+            if file_type == "application/pdf":
+                pdf_reader = PdfReader(io.BytesIO(file_content))
+                return " ".join(page.extract_text() for page in pdf_reader.pages if page.extract_text())
+
+            elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                doc = docx.Document(io.BytesIO(file_content))
+                return " ".join(paragraph.text for paragraph in doc.paragraphs)
+
+            return file_content.decode('utf-8')
+
+        except Exception as e:
+            return f"Error extracting text: {str(e)}"
+        
 @csrf_exempt
 def execute_sql_query(request):
     """Execute SQL query from a POST request."""

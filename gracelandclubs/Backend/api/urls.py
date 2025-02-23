@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
-    execute_sql_query, ClubMembersView, RegisterView, LoginView, AllEventsView,
+    execute_sql_query, ClubMembersView,AnalyzeFormView, RegisterView, LoginView, AllEventsView,
     UserDetailView, EventDetailView, SearchUsersView, AddMemberView,
     EventListCreateView  # ✅ Make sure this is imported
 )
@@ -15,6 +15,7 @@ urlpatterns = [
     # --- User Endpoints ---
     path("user/", UserDetailView.as_view(), name="user_detail"),  # ✅ Fetch logged-in user details
     path("clubs/<slug:club_name>/members/", ClubMembersView.as_view(), name="club-members"),
+    path("api/analyze-form/", AnalyzeFormView.as_view(), name="analyze-form"),
 
     # --- Event Endpoints ---
     path("events/", AllEventsView.as_view(), name="all-events"),  # ✅ NEW ENDPOINT FOR ALL EVENTS

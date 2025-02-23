@@ -59,11 +59,11 @@ console.log(user)
 
   return isAuthenticated ? (
     <div className="dashboard-container">
-      <UserBanner
+      {/* <UserBanner
         user={user}
-        setSelectedClub={setSelectedClub}
+        setSelectedClub={user.club_list[0].name}
         setActivePage={setActivePage}
-      />
+      /> */}
       <Sidebar
         items={["Home", "Calendar", "Account", "File"]}
         activeItem={activePage}
