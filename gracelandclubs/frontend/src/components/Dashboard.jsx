@@ -4,7 +4,7 @@ import ClubFinance from "./ClubFinance";
 import Sidebar from "./Sidebar";
 import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
-
+import UserBanner from "./UserBanner";
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 const mockUserData = {
@@ -94,33 +94,14 @@ const Dashboard = ({ setCurrentPage }) => {
     switch (activePage) {
       case "Home":
         return (
+    <div>
+            <UserBanner
+              user={user}
+              setSelectedClub={setSelectedClub}
+              setActivePage={setActivePage}
+            />
+        
           <div className="dashboard-home">
-            <h2>Welcome, {user?.username}!</h2>
-            <div className="user-info">
-              <p>
-                <strong>Email:</strong> {user?.email}
-              </p>
-              <p>
-                <strong>Age:</strong> {user?.age}
-              </p>
-              <p>
-                <strong>Activity Level:</strong> {user?.activity_level}
-              </p>
-            </div>
-            <h3>Your Clubs:</h3>
-            <ul className="club-list">
-              {user?.clubs?.map((club) => (
-                <li
-                  key={club.id}
-                  onClick={() => {
-                    setSelectedClub(club);
-                    setActivePage("ClubDetail");
-                  }}
-                >
-                  {club.name}
-                </li>
-              ))}
-            </ul>
             <div className="shortcuts-container">
               <div className="shortcut-column left">
                 <div className="shortcut-card">
@@ -177,6 +158,7 @@ const Dashboard = ({ setCurrentPage }) => {
               </div>
             )}
           </div>
+          </div>
         );
       case "Calendar":
         return <Calendar selectedDay={calendarPrepopulatedDay} />;
@@ -216,6 +198,7 @@ const Dashboard = ({ setCurrentPage }) => {
       <div className="dashboard-content">{renderContent()}</div>
     </div>
   );
+  
 };
 
 export default Dashboard;
