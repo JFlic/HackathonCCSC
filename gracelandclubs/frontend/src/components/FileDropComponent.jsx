@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./FileDropComponent.css";
 import { renderAsync } from "docx-preview";
+import dotenv from "dotenv"
 
 const FileDropComponent = ({ preview, onUploadComplete }) => {
   const [dragOver, setDragOver] = useState(false);
@@ -92,32 +93,52 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
     localStorage.setItem("uploadedFile", JSON.stringify(fileData));
   };
 
+  dotenv.config();
+
   const handleUpload = async () => {
-    if (file) { // Check if there's a file to upload
+    if (file) {
       setUploading(true);
       setError(null);
       setCorrections(null);
-  
+
       const formData = new FormData();
-      formData.append("file", file); // Append the file under the key 'file'
-  
+      formData.append("file", file);
+
       try {
-        const response = await fetch(BACKEND_URL, {
+        const fileText = await file.text(); // Read the file as text
+        const criteria = `Ensure the funding request form meets the following criteria:
+          - Specifies whether the club is asking for one-time or recurring funding.
+          - Every box on the form is filled out.
+          - Includes an alternative source of funding.
+          - The appropriation benefits a large number of people.
+          - No transportation or gas money reimbursement requests.
+          - Includes a specific date for when the money will be spent.
+          - The appropriation request description should explain how the club will be advertised to campus.`;
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
-          body: formData,
-          // You don't need to explicitly set 'Content-Type': 'multipart/form-data',
-          // as the browser will automatically set it, including the boundary parameter.
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: "You are an AI that reviews funding request forms based on strict criteria." },
+              { role: "user", content: `${criteria}\n\nHere is the funding request form:\n\n${fileText}` },
+            ],
+          }),
         });
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
-        const data = await response.json(); // Assuming the server responds with JSON
-        setCorrections(data.corrections); // Process your corrections or other response data
-  
+
+        const data = await response.json();
+        setCorrections(data.choices[0].message.content);
+
         if (onUploadComplete) {
-          onUploadComplete(); // Callback function if needed
+          onUploadComplete();
         }
       } catch (error) {
         console.error("Upload failed:", error);
@@ -127,7 +148,6 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
       }
     }
   };
-  
 
   return (
     <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
