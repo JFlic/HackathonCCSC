@@ -75,12 +75,13 @@ console.log(user)
             <UserBanner user={user.club_list[0].name} />
             <div className="dashboard-home">
               <Calendar user={user}></Calendar>
-              <Email  user={user}/>
             </div>
+            <Email  user={user}/>
+
           </div>
         )}
 {activePage === "Calendar" && user && <Calendar user={user} />}
-{activePage === "Account" && <ClubFinance />}
+{activePage === "Account" && <ClubFinance club= {user.club_list[0]} />}
         {activePage === "File" && <FileDropComponent />}
       </div>
     </div>

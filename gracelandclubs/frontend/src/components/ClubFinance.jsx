@@ -2,7 +2,10 @@ import React from "react";
 import "./ClubFinance.css";
 import FileDropComponent from "./FileDropComponent";
 
-const ClubFinance = ({ totalFund, currentFund, purchases }) => {
+const ClubFinance = ({ club = {}}) => {
+  totalFund = club.totalFund
+  currentFund= club.currentFund 
+  currentFund= club.purchases
   return (
     <div>
     <div className="club-finance">

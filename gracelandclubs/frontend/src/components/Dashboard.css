@@ -14,6 +14,7 @@ body {
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  transition: margin-left 0.4s ease-in; /* if needed for content shifting */
 }
 
 /* Sidebar styles */
@@ -21,18 +22,19 @@ body {
   position: fixed;
   top: 50px;
   left: 0;
-  min-width: 150px;
+  width: 150px; /* changed from min-width to width */
   height: calc(100vh - 50px);
   background: darkslategrey;
   color: #fff;
   padding: 20px;
-  transition: 0.4s ease-in;
+  transition: width 0.4s ease-in;
   z-index: 1000;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
-.sidebar-closed {
-  min-width: 40px;
+/* Sidebar closed state */
+.sidebar-closed .sidebar {
+  width: 40px; /* collapsed width */
 }
 
 /* Dashboard content area */
@@ -44,6 +46,12 @@ body {
   border-radius: 8px;
   animation: fadeIn 0.5s ease-in;
   margin-top: 60px;
+  transition: margin-left 0.4s ease-in;
+}
+
+/* Adjust dashboard-content margin when sidebar is closed */
+.sidebar-closed .dashboard-content {
+  margin-left: 40px;
 }
 
 /* FadeIn animation for dashboard content */
