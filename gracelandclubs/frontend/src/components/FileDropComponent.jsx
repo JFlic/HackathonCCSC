@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import "./FileDropComponent.css";
 import { renderAsync } from "docx-preview";
-import dotenv from "dotenv"
+import dotenv from ".env";
+
+dotenv.config();
 
 const FileDropComponent = ({ preview, onUploadComplete }) => {
   const [dragOver, setDragOver] = useState(false);
@@ -14,9 +16,6 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewText, setPreviewText] = useState(null);
   const [docxHtml, setDocxHtml] = useState("");
-
-  const demoMode = true;
-  const BACKEND_URL = "http://127.0.0.1:8000/api/upload";
 
   // Drag and drop handlers
   const handleDragOver = (e) => {
@@ -93,9 +92,7 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
     localStorage.setItem("uploadedFile", JSON.stringify(fileData));
   };
 
-  dotenv.config();
-
-  const handleUpload = async () => {
+  const handleUpload = useCallback(async () => {
     if (file) {
       setUploading(true);
       setError(null);
@@ -147,32 +144,37 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
         setUploading(false);
       }
     }
-  };
+  }, [file, onUploadComplete]); // Dependencies for useCallback
 
   return (
-    <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
-      <h2>Drop your file below for corrections</h2>
-      <div
-        className={`file-drop-area ${dragOver ? "drag-over" : ""}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}>
-        {file ? <p>{file.name}</p> : <p>Drag & drop your file here, or click to select one</p>}
-        <input type="file" className="file-input" onChange={handleFileSelect} />
-      </div>
-      {previewUrl && <div className="file-preview"><img src={previewUrl} alt="Preview" /></div>}
-      {previewText && <div className="file-preview-text"><pre>{previewText}</pre></div>}
-      {docxHtml && <div className="docx-preview-container" dangerouslySetInnerHTML={{ __html: docxHtml }} />}
-      {uploading && <p>Uploading file...</p>}
-      {error && <p className="error">Error: {error}</p>}
-      {corrections && (
-        <div className="corrections">
-          <h3>Corrections:</h3>
-          <pre>{JSON.stringify(corrections, null, 2)}</pre>
+      <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
+        <h2>Drop your file below for corrections</h2>
+        <div
+          className={`file-drop-area ${dragOver ? "drag-over" : ""}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}>
+          {file ? <p>{file.name}</p> : <p>Drag & drop your file here, or click to select one</p>}
+          <input type="file" className="file-input" onChange={handleFileSelect} />
         </div>
-      )}
-    </div>
-  );
-};
+        {file && (
+          <button className="upload-button" onClick={handleUpload}>
+            Upload File
+          </button>
+        )}
+        {previewUrl && <div className="file-preview"><img src={previewUrl} alt="Preview" /></div>}
+        {previewText && <div className="file-preview-text"><pre>{previewText}</pre></div>}
+        {docxHtml && <div className="docx-preview-container" dangerouslySetInnerHTML={{ __html: docxHtml }} />}
+        {uploading && <p>Uploading file...</p>}
+        {error && <p className="error">Error: {error}</p>}
+        {corrections && (
+          <div className="corrections">
+            <h3>Corrections:</h3>
+            <pre>{JSON.stringify(corrections, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+    );
+  }
 
 export default FileDropComponent;
