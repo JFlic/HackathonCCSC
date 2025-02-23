@@ -39,7 +39,16 @@ const generateCalendarDays = (year, month) => {
   return days;
 };
 
-const Calendar = ({ user }) => {
+// test
+const Calendar = ({
+  preview,
+  selectedDay, // Lifted selected day from Dashboard (a full day object)
+  onDaySelect, // Callback used in preview mode to lift the day
+}) => {
+  const isPreview = preview === true;
+  const containerClass = isPreview ? "calendar-container preview-mode" : "calendar-container";
+
+  // Full Calendar state (only used in full mode)
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
