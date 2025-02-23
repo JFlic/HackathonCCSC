@@ -126,12 +126,7 @@ const Dashboard = ({ setCurrentPage }) => {
                     preview
                   />
                 </div>
-                <div
-                  className="shortcut-card"
-                  onClick={() => setActivePage("File")}
-                >
-                  <FileDropComponent preview />
-                </div>
+
               </div>
               {selectedCalendarDay && (
                 <div className="day-modal-overlay animate-fadeIn">

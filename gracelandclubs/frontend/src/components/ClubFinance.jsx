@@ -1,8 +1,10 @@
 import React from "react";
 import "./ClubFinance.css";
+import FileDropComponent from "./FileDropComponent";
 
 const ClubFinance = ({ totalFund, currentFund, purchases }) => {
   return (
+    <div>
     <div className="club-finance">
       <h2>Club Account</h2>
       <p className="fund-amount">2025 Starting Total: ${totalFund.toFixed(2)}</p>
@@ -23,6 +25,14 @@ const ClubFinance = ({ totalFund, currentFund, purchases }) => {
       ) : (
         <p>No purchases found.</p>
       )}
+    </div>
+
+                      <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("File")}
+                >
+                  <FileDropComponent />
+                </div>
     </div>
   );
 };
