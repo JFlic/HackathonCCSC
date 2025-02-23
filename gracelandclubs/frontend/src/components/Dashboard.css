@@ -2,13 +2,13 @@
 body {
     margin: 0;
     /* Choose a neutral background for the entire page */
-    background-color: #f5f5f5; 
+    background-color: #ffffff; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
       "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: #333; /* Dark text for good contrast */
+    color: #3d566b; /* Dark text for good contrast */
   }
   
   /* Container for the entire dashboard */
@@ -43,7 +43,7 @@ body {
     padding: 20px;
   
     /* Make the content stand out against the page background */
-    background-color: #fff;
+    background-color: #fef4ea;
     border-radius: 8px;
   
     /* Fade-in effect */
@@ -111,5 +111,10 @@ body {
   /* User info styling */
   .user-info p {
     margin: 5px 0;
+  }
+  
+  .calendar-box {
+    background-color: #ffffff; /* Set calendar box background to white */
+    /* Add any other styles needed for the calendar boxes */
   }
   
