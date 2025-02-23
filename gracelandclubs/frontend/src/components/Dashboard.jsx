@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
 import UserBanner from "./UserBanner";
+import LeaderIntro from "./LeaderIntro";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -31,7 +32,7 @@ const mockUserData = {
   ],
 };
 
-const SIDEBAR_ITEMS = ["Home", "Calendar", "Finance", "File"];
+const SIDEBAR_ITEMS = ["Home", "Calendar", "Account", "File"];
 
 const Dashboard = ({ setCurrentPage }) => {
   const [financeData] = useState({
@@ -101,35 +102,33 @@ const Dashboard = ({ setCurrentPage }) => {
               setActivePage={setActivePage}
             />
             <div className="dashboard-home">
-              <div className="shortcuts-container">
-                <div className="shortcut-column left">
-                  <div className="shortcut-card">
-                    <Calendar
-                      preview
-                      selectedDay={selectedCalendarDay}
-                      onDaySelect={setSelectedCalendarDay}
-                    />
-                  </div>
+              <div className="dashboard-main-column">
+                <LeaderIntro />
+                <div className="dashboard-calendar">
+                  <Calendar
+                    preview
+                    selectedDay={selectedCalendarDay}
+                    onDaySelect={setSelectedCalendarDay}
+                  />
                 </div>
-                <div className="shortcut-column right">
-                  <div
-                    className="shortcut-card"
-                    onClick={() => setActivePage("Finance")}
-                  >
-                    <ClubFinance
-                      totalFund={totalFund}
-                      currentFund={currentFund}
-                      purchases={financeData.purchases}
-                      preview
-                    />
-                  </div>
-                  <div className="shortcut-card">
-                    {/* Pass onUploadComplete callback so that after upload the page switches to "File" */}
-                    <FileDropComponent
-                      preview
-                      onUploadComplete={() => setActivePage("File")}
-                    />
-                  </div>
+              </div>
+              <div className="dashboard-side-components">
+                <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("Account")}
+                >
+                  <ClubFinance
+                    totalFund={totalFund}
+                    currentFund={currentFund}
+                    purchases={financeData.purchases}
+                    preview
+                  />
+                </div>
+                <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("File")}
+                >
+                  <FileDropComponent preview />
                 </div>
               </div>
               {selectedCalendarDay && (
@@ -162,7 +161,7 @@ const Dashboard = ({ setCurrentPage }) => {
         );
       case "Calendar":
         return <Calendar selectedDay={calendarPrepopulatedDay} />;
-      case "Finance":
+      case "Account":
         return (
           <ClubFinance
             totalFund={totalFund}
