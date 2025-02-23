@@ -47,7 +47,6 @@ const generateCalendarDays = (year, month) => {
   return days;
 };
 
-// test
 const Calendar = ({
   preview,
   selectedDay, // Lifted selected day from Dashboard (a full day object)
