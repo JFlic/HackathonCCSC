@@ -1,101 +1,113 @@
+/* Full mode container */
 .file-drop-container {
-    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     padding: 20px;
-    box-sizing: border-box;
-}
-  
-.file-drop-area {
-    border: 2px dashed #fa5c35;
-    border-radius: 8px;
-    padding: 40px;
-    background-color: rgba(250, 92, 53, 0.05);
     position: relative;
+    transition: background-color 0.3s;
+  }
+  
+  .file-drop-container h2 {
+    margin-top: 0;
+  }
+  
+  .file-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    padding: 30px;
+    text-align: center;
     cursor: pointer;
-    transition: all 0.3s;
-}
+    transition: background-color 0.3s;
+    margin-bottom: 15px;
+  }
   
-.file-drop-area:hover {
-    background-color: rgba(250, 92, 53, 0.1);
-}
+  .file-drop-area p {
+    margin: 0;
+    color: #666;
+  }
   
-.file-input {
+  .file-drop-container.drag-over .file-drop-area {
+    background-color: #f9f9f9;
+  }
+  
+  .file-input {
     opacity: 0;
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
     cursor: pointer;
-}
+  }
   
-.file-preview {
-    width: 100%;
-    max-width: none;
-    margin-top: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-  
-.file-preview img {
-    width: 100%;
-    height: auto;
-    max-height: 600px; /* Increase max height for a larger preview */
-    object-fit: contain;
-    border: none; /* Remove extra border if using container border */
-    border-radius: 4px;
-}
-  
-.file-preview-text {
-    margin-top: 20px;
-    text-align: left;
-    background: #f7f7f7;
-    padding: 15px;
-    border-radius: 4px;
-    max-height: 300px;
-    overflow: auto;
-}
-  
-/* Styles for the docx-preview container */
-.docx-preview-container {
-    margin-top: 20px;
-    text-align: left;
-    background: #f7f7f7;
-    padding: 15px;
-    border-radius: 4px;
-    max-height: 300px;
-    overflow: auto;
-    position: relative;
-    z-index: 1; /* lower than your modal */
-}
-  
-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
+  .upload-button {
+    background-color: #007bff;
     border: none;
+    padding: 10px 15px;
     border-radius: 4px;
-    background-color: #28a745;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
+    margin-bottom: 15px;
+  }
   
-button:hover {
-    background-color: #218838;
-}
+  .upload-button:hover {
+    background-color: #0056b3;
+  }
   
-.error {
-    color: red;
-}
+  .file-preview,
+  .file-preview-text,
+  .docx-preview-container {
+    margin: 15px 0;
+  }
   
-.corrections {
-    margin-top: 20px;
-    text-align: left;
-    background: #f7f7f7;
-    padding: 15px;
+  .file-preview img {
+    max-width: 100%;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    overflow-x: auto;
-}
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .analysis-results {
+    margin-top: 20px;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 6px;
+  }
+  
+  .analysis-results h3 {
+    margin-top: 0;
+  }
+  
+  /* Preview Mode */
+  .file-drop-preview {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .file-drop-preview:hover {
+    background-color: #fafafa;
+  }
+  
+  .file-drop-preview h3 {
+    margin-top: 0;
+  }
+  
+  .preview-file-name {
+    color: #555;
+    font-weight: 500;
+    margin: 10px 0;
+  }
+  
+  .preview-instructions {
+    color: #999;
+    font-size: 14px;
+  }
   

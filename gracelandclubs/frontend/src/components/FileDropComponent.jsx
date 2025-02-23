@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./FileDropComponent.css";
 import { renderAsync } from "docx-preview";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-const FileDropComponent = ({ preview, onUploadComplete }) => {
+const FileDropComponent = ({ preview, setActivePage, onUploadComplete }) => {
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -15,6 +15,13 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewText, setPreviewText] = useState(null);
   const [docxHtml, setDocxHtml] = useState("");
+
+  // If in preview mode, immediately switch to the full File Drop page.
+  useEffect(() => {
+    if (preview && setActivePage) {
+      setActivePage("Funding");
+    }
+  }, [preview, setActivePage]);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -71,6 +78,7 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
     }
   };
 
+  // Automatically trigger upload when a file is selected
   const handleUpload = useCallback(async () => {
     if (!file) {
       setError("No file selected.");
@@ -81,44 +89,45 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
     setError(null);
     setAnalysis(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    // Simulated fake response using setTimeout
+    setTimeout(() => {
+      const fakeResponse = {
+        issues: [
+          "The document contains passive voice in multiple sections.",
+          "Some sentences exceed 30 words, making readability difficult.",
+          "Detected missing citations in Section 2.3 and Section 4.1.",
+          "The formatting of bullet points is inconsistent.",
+        ],
+        recommendations: [
+          "Rewrite long sentences to improve readability.",
+          "Use active voice where possible for better clarity.",
+          "Add citations for unsupported claims in Sections 2.3 and 4.1.",
+          "Standardize bullet point formatting for consistency.",
+        ],
+        summary:
+          "The document is well-structured but has some readability issues and citation gaps. Improvements in clarity and formatting are recommended.",
+        confidence_score: 87.5,
+      };
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found.");
-      }
-
-      const response = await fetch(`${API_BASE_URL}/analyze-form/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Upload failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setAnalysis(data);
-      if (onUploadComplete) onUploadComplete();
-    } catch (error) {
-      setError(error.message);
-    } finally {
+      setAnalysis(fakeResponse);
       setUploading(false);
-    }
+      if (onUploadComplete) onUploadComplete();
+    }, 2000);
   }, [file, onUploadComplete]);
 
+  useEffect(() => {
+    if (file) {
+      handleUpload();
+    }
+  }, [file, handleUpload]);
+
+  // Render full mode UI since preview is not needed (it auto-switches)
   return (
-    <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
+    <div className={`file-drop-container ${dragOver ? "drag-over" : ""}`}>
       <h2>Drop your form below for AI Analysis</h2>
-      
+
       <div
-        className={`file-drop-area ${dragOver ? "drag-over" : ""}`}
+        className="file-drop-area"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -127,18 +136,25 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
         <input type="file" className="file-input" onChange={handleFileSelect} />
       </div>
 
-      {file && (
-        <button className="upload-button" onClick={handleUpload} disabled={uploading}>
-          {uploading ? "Analyzing..." : "Analyze Form"}
-        </button>
+      {previewUrl && (
+        <div className="file-preview">
+          <img src={previewUrl} alt="Preview" />
+        </div>
+      )}
+      {previewText && (
+        <div className="file-preview-text">
+          <pre>{previewText}</pre>
+        </div>
+      )}
+      {docxHtml && (
+        <div
+          className="docx-preview-container"
+          dangerouslySetInnerHTML={{ __html: docxHtml }}
+        />
       )}
 
-      {previewUrl && <div className="file-preview"><img src={previewUrl} alt="Preview" /></div>}
-      {previewText && <div className="file-preview-text"><pre>{previewText}</pre></div>}
-      {docxHtml && <div className="docx-preview-container" dangerouslySetInnerHTML={{ __html: docxHtml }} />}
-
       {error && <p className="error">Error: {error}</p>}
-      
+
       {analysis && (
         <div className="analysis-results">
           <h3>AI Analysis Report</h3>
@@ -158,6 +174,10 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
               <li>No recommendations provided.</li>
             )}
           </ul>
+          <h4>Summary:</h4>
+          <p>{analysis.summary}</p>
+          <h4>Confidence Score:</h4>
+          <p>{analysis.confidence_score}%</p>
         </div>
       )}
     </div>

@@ -1,62 +1,140 @@
+/* Full version styles */
 .club-finance {
-    width: 100%;
-    padding: 10px;
     background-color: #fef4ea;
+    padding: 25px;
     border-radius: 8px;
-    margin-bottom: 10px;
-}
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    font-family: inherit;
+  }
   
-.club-finance h2,
-.club-finance h3 {
-    margin-top: 0;
-    text-decoration: underline;
-}
+  .fund-details {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
   
-.fund-amount {
+  .fund-item {
+    text-align: center;
+  }
+  
+  .fund-label {
     font-size: 14px;
+    color: #777;
+    margin: 0;
+  }
+  
+  .fund-value {
+    font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px;
-    border: 2px solid #fa5c35;
-    padding: 10px;
-    border-radius: 4px;
-    background-color: #fa5c35;
-    color: #ffffff;
-}
+    margin: 5px 0 0;
+  }
   
-.purchase-list {
-    display: grid;
-    gap: 5px;
-    margin-top: 10px;
-}
+  .purchase-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+  }
   
-.purchase-item {
-    background-color: #f7f7f7;
-    padding: 8px;
-    border-radius: 4px;
-    transition: 0.3s;
-}
+  .purchase-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+  }
   
-.purchase-item:hover {
-    background-color: #f0f0f0;
-    transform: translateX(3px);
-}
+  .purchase-item:last-child {
+    border-bottom: none;
+  }
   
-.purchase-name {
+  .purchase-name {
     flex: 2;
-    font-weight: bold;
-    font-size: 12px;
-}
+  }
   
-.purchase-amount, .purchase-date {
+  .purchase-amount,
+  .purchase-date {
     flex: 1;
     text-align: right;
-    margin-right: 5px;
-    font-size: 12px;
-}
-.club-dashboard {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+  }
+  
+  .shortcut-card {
+    margin: 20px 0;
+    cursor: pointer;
+    border: 2px dashed #ccc;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    transition: background-color 0.3s;
+  }
+  
+  .shortcut-card:hover {
+    background-color: #fef4ea;
+  }
+  
+  /* Charts layout */
+  .charts-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+  }
+  
+  .chart-section {
+    background-color: #fef4ea;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .chart-section h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 16px;
+    color: #444;
+  }
+  
+  .chart {
+    height: 250px;
+    position: relative;
+  }
+  
+  /* Preview mode styles */
+  .club-finance-preview {
     background-color: #fff;
-}
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .club-finance-preview:hover {
+    background-color: #fafafa;
+  }
+  
+  .preview-fund-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .preview-purchase-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .preview-purchase-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .preview-purchase-item:last-child {
+    border-bottom: none;
+  }
+  

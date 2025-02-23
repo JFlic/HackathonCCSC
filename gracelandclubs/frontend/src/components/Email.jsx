@@ -10,6 +10,8 @@ const Email = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [addingMember, setAddingMember] = useState(false);
+  // Track which tab is active: "members", "search", or "compose"
+  const [activeTab, setActiveTab] = useState("members");
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -130,7 +132,7 @@ const Email = ({ user }) => {
   };
 
   const handleEmailClick = () => {
-    const bccList = members.map(user => user.email).join(','); // Creates a string of all emails separated by commas
+    const bccList = members.map((member) => member.email).join(",");
     const subject = encodeURIComponent("Club Announcement");
     const encodedMessage = encodeURIComponent(message);
     window.location.href = `mailto:?bcc=${bccList}&subject=${subject}&body=${encodedMessage}`;
@@ -140,21 +142,55 @@ const Email = ({ user }) => {
     <div className="email-container">
       <h2>Email Announcements</h2>
 
-      {loading ? (
-        <p>Loading members...</p>
-      ) : members.length === 0 ? (
-        <p>No members found.</p>
-      ) : (
-        <>
-          <ul className="members-list">
-            {members.map((user) => (
-              <li key={user.email} className="member-item">
-                {user.email}
-                <button className="remove-button" onClick={() => handleRemoveMember(user.email)}>Remove</button>
-              </li>
-            ))}
-          </ul>
+      {/* Tab Buttons */}
+      <div className="email-tabs">
+      <button
+  className={`tab-button ${activeTab === "members" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("members")}
+>
+  Members
+</button>
+<button
+  className={`tab-button ${activeTab === "search" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("search")}
+>
+  Search
+</button>
+<button
+  className={`tab-button ${activeTab === "compose" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("compose")}
+>
+  Compose
+</button>
+      </div>
 
+      {/* Conditional Rendering based on activeTab */}
+      {activeTab === "members" && (
+        <>
+          {loading ? (
+            <p>Loading members...</p>
+          ) : members.length === 0 ? (
+            <p>No members found.</p>
+          ) : (
+            <ul className="members-list">
+              {members.map((member) => (
+                <li key={member.email} className="member-item">
+                  {member.email}
+                  <button
+                    className="remove-button"
+                    onClick={() => handleRemoveMember(member.email)}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+
+      {activeTab === "search" && (
+        <>
           <div className="search-container">
             <input
               type="text"
@@ -164,29 +200,35 @@ const Email = ({ user }) => {
             />
             <button onClick={handleSearch}>Search</button>
           </div>
-
           <ul className="search-results">
-            {searchResults.map((user) => (
-              <li key={user.email}>
-                {user.email}
-                <button onClick={() => handleAddMember(user.email)} disabled={addingMember}>Add</button>
+            {searchResults.map((resultUser) => (
+              <li key={resultUser.email}>
+                {resultUser.email}
+                <button
+                  onClick={() => handleAddMember(resultUser.email)}
+                  disabled={addingMember}
+                >
+                  Add
+                </button>
               </li>
             ))}
           </ul>
         </>
       )}
 
-      {/* Email Form */}
-      <textarea
-        className="email-textarea"
-        placeholder="Write your message here..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-
-      <button onClick={handleEmailClick} className="email-button">
-        Send Email
-      </button>
+      {activeTab === "compose" && (
+        <>
+          <textarea
+            className="email-textarea"
+            placeholder="Write your message here..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button onClick={handleEmailClick} className="email-button">
+            Send Email
+          </button>
+        </>
+      )}
     </div>
   );
 };
