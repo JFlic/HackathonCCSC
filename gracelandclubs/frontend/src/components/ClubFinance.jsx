@@ -3,7 +3,6 @@ import "./ClubFinance.css";
 import FileDropComponent from "./FileDropComponent";
 
 const ClubFinance = ({ totalFund, currentFund, purchases }) => {
-
   return (
     <div>
     <div className="club-finance">
@@ -32,6 +31,7 @@ const ClubFinance = ({ totalFund, currentFund, purchases }) => {
                   className="shortcut-card"
                   onClick={() => setActivePage("File")}
                 >
+                  <FileDropComponent />
                 </div>
     </div>
   );
