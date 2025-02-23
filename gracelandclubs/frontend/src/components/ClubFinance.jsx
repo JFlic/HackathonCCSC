@@ -1,11 +1,12 @@
 import React from "react";
 import "./ClubFinance.css";
 
-const ClubFinance = ({ fund, purchases }) => {
+const ClubFinance = ({ totalFund, currentFund, purchases }) => {
   return (
     <div className="club-finance">
-      <h2>Club Funds</h2>
-      <p className="fund-amount">Current Fund: ${fund.toFixed(2)}</p>
+      <h2>Club Finance</h2>
+      <p className="fund-amount">Total Funds: ${totalFund.toFixed(2)}</p>
+      <p className="fund-amount">Current Funds: ${currentFund.toFixed(2)}</p>
       <h3>Recent Purchases</h3>
       {purchases && purchases.length > 0 ? (
         <ul className="purchase-list">

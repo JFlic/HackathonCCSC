@@ -45,6 +45,14 @@ const Dashboard = ({ setCurrentPage }) => {
     ],
   });
 
+  // Compute current funds: total fund minus the sum of purchase amounts
+  const totalFund = financeData.fund;
+  const totalPurchases = financeData.purchases.reduce(
+    (sum, purchase) => sum + purchase.amount,
+    0
+  );
+  const currentFund = totalFund - totalPurchases;
+
   // Dashboard state
   const [activeItem, setActiveItem] = useState("Home");
   const [user, setUser] = useState(null);
@@ -113,8 +121,7 @@ const Dashboard = ({ setCurrentPage }) => {
           </p>
         </div>
 
-        {/* Club finance component */}
-
+     
 
         <h3>Your Clubs:</h3>
         <ul className="club-list">
@@ -135,14 +142,17 @@ const Dashboard = ({ setCurrentPage }) => {
           </div>
         )}
       </div>
-<div>
-<ClubFinance
-          fund={financeData.fund}
+   {/* ClubFinance component with total and current funds */}
+  <div>
+  <ClubFinance
+          totalFund={totalFund}
+          currentFund={currentFund}
           purchases={financeData.purchases}
         />
-              <FileDropComponent />
+      <FileDropComponent />
 
-</div>
+  </div>
+  
     </div>
   );
 };
