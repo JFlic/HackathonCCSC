@@ -8,18 +8,103 @@ from django.views.decorators.csrf import csrf_exempt
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, BitsAndBytesConfig
 from api.models import User, NutritionPlan
 from django.db.models import Q
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from urllib.parse import unquote_plus
-import re
-
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
-from django.contrib.auth.hashers import make_password  # ✅ Import password hasher
-from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from urllib.parse import unquote_plus
+import re
+import io
+import docx
+import PyPDF2
+
+User = get_user_model()  # Use Django's built-in function to get the user model
+
+# Initialize model and tokenizer lazily
+class ModelLoader:
+    model = None
+    tokenizer = None
+
+    @classmethod
+    def get_model(cls):
+        if cls.model is None or cls.tokenizer is None:
+            model_directory = settings.MODEL_DIRECTORY
+            try:
+                cls.tokenizer = AutoTokenizer.from_pretrained(model_directory)
+                cls.model = AutoModelForSeq2SeqLM.from_pretrained(
+                    model_directory,
+                    device_map='auto'
+                )
+            except Exception as e:
+                raise ImportError(f"Could not load the AI model: {str(e)}")
+        return cls.model, cls.tokenizer
+
+# View to handle form analysis
+class AnalyzeFormView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if 'file' not in request.FILES:
+            return JsonResponse({'error': 'No file uploaded.'}, status=400)
+
+        file = request.FILES['file']
+        file_type = file.content_type
+        content = file.read()
+
+        text = self.extract_text(content, file_type)
+        prompt = self.generate_prompt(text)
+
+        model, tokenizer = ModelLoader.get_model()
+        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        
+        with torch.no_grad():
+            outputs = model.generate(
+                inputs["input_ids"],
+                max_new_tokens=500,
+                temperature=0.7,
+                top_p=0.95,
+                do_sample=True
+            )
+        
+        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        
+        try:
+            analysis = json.loads(response)
+        except json.JSONDecodeError:
+            analysis = {"issues": ["Error parsing model response"], "recommendations": ["Please try again"]}
+        
+        return JsonResponse(analysis)
+
+    @staticmethod
+    def extract_text(file_content: bytes, file_type: str) -> str:
+        if file_type == "application/pdf":
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+            return " ".join(page.extract_text() for page in pdf_reader.pages)
+        elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            doc = docx.Document(io.BytesIO(file_content))
+            return " ".join(paragraph.text for paragraph in doc.paragraphs)
+        return file_content.decode('utf-8')
+
+    @staticmethod
+    def generate_prompt(form_content: str) -> str:
+        requirements = """
+        Please analyze this appropriation form against these requirements:
+        1. Must specify if funding is one-time or recurring
+        2. All form fields must be filled out
+        3. Must show alternative funding sources
+        4. Must benefit a large number of people
+        5. No transportation or gas money reimbursements allowed
+        6. Must have specific date for spending
+        7. Must include campus advertising plan
+        For each requirement, indicate if it is met or not met. If not met, explain what needs to be added.
+        Format your response as a JSON object with 'issues' and 'recommendations' arrays.
+        """
+        return f"<s>[INST] Here is an appropriation form content: {form_content} {requirements}[/INST]"
+
 User = get_user_model()  # ✅ CORRECT
 
 # --- Model Setup ---
@@ -175,6 +260,34 @@ def search_nutrition_plans(request):
     print("Generated Query:", filters)
 
     return JsonResponse({"results": list(plans)})
+
+
+# Helper function to extract text from various file formats
+def extract_text(file_content: bytes, file_type: str) -> str:
+    if file_type == "application/pdf":
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+        text = " ".join(page.extract_text() for page in pdf_reader.pages)
+    elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        doc = docx.Document(io.BytesIO(file_content))
+        text = " ".join(paragraph.text for paragraph in doc.paragraphs)
+    else:
+        text = file_content.decode('utf-8')
+    return text
+
+# Helper function to generate the prompt for the AI model
+def generate_prompt(form_content: str) -> str:
+    return f"""<s>[INST] Here is an appropriation form content:
+{form_content}
+Please analyze this appropriation form against these requirements:
+1. Must specify if funding is one-time or recurring
+2. All form fields must be filled out
+3. Must show alternative funding sources
+4. Must benefit a large number of people
+5. No transportation or gas money reimbursements allowed
+6. Must have specific date for spending
+7. Must include campus advertising plan
+For each requirement, indicate if it is met or not met. If not met, explain what needs to be added.
+Format your response as a JSON object with 'issues' and 'recommendations' arrays.[/INST]"""
 
     
 @csrf_exempt
