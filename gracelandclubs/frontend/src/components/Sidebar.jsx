@@ -8,6 +8,11 @@ const Sidebar = ({ items = [], activeItem, onItemSelect }) => {
     setIsOpen((prev) => !prev);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // ✅ Remove authentication token
+    window.location.href = "/login"; // ✅ Redirect to login page
+  };
+
   return (
     <div className={`sidebar ${!isOpen ? "sidebar-closed" : ""}`}>
       <button className="sidebar__button" onClick={toggleSidebar}>
@@ -17,13 +22,16 @@ const Sidebar = ({ items = [], activeItem, onItemSelect }) => {
         {items.map((item, index) => (
           <li
             key={index}
-            className="sidebar__listItem"
+            className={`sidebar__listItem ${activeItem === item ? "active" : ""}`}
             onClick={() => onItemSelect(item)}
           >
             <span>{item}</span>
           </li>
         ))}
       </ul>
+      <button className="sidebar__logout-button" onClick={handleLogout}>
+        Logout
+      </button>
     </div>
   );
 };

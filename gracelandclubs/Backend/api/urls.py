@@ -1,17 +1,28 @@
 from django.urls import path
-from .views import search_nutrition_plans,UserDetailView, RegisterView, LoginView, execute_sql_query, ask, get_users, get_user_nutrition, get_nutrition_data
 from rest_framework_simplejwt.views import TokenRefreshView
+from .views import (
+    execute_sql_query, ClubMembersView, RegisterView, LoginView, AllEventsView,
+    UserDetailView, EventDetailView, SearchUsersView, AddMemberView,
+    EventListCreateView  # ✅ Make sure this is imported
+)
 
 urlpatterns = [
-    path("ask/", ask, name="ask"),  # ✅ Ensure the trailing slash
-    path("users/", get_users, name="get_users"),
-    path("query/", execute_sql_query, name="execute_sql_query"),  # ✅ New SQL query API
-    path("users/<int:user_id>/nutrition/", get_user_nutrition, name="get_user_nutrition"),
-    path("nutrition/", get_nutrition_data, name="get_nutrition_data"),
-    path("search-plans/", search_nutrition_plans, name="search_nutrition_plans"),
-    path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('user/', UserDetailView.as_view(), name="user-detail"),  # ✅ User info endpoint
+    # --- Authentication Endpoints ---
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
+    # --- User Endpoints ---
+    path("user/", UserDetailView.as_view(), name="user_detail"),  # ✅ Fetch logged-in user details
+    path("clubs/<slug:club_name>/members/", ClubMembersView.as_view(), name="club-members"),
+
+    # --- Event Endpoints ---
+    path("events/", AllEventsView.as_view(), name="all-events"),  # ✅ NEW ENDPOINT FOR ALL EVENTS
+    path("events/<int:event_id>/", EventDetailView.as_view(), name="event-detail"),  # ✅ Event detail endpoint
+    path("clubs/<slug:club_name>/<int:year>/<int:month>/events/", EventListCreateView.as_view(), name="event-list-by-date"),  # ✅ FIXED: Added missing endpoint
+    path("search-users/", SearchUsersView.as_view(), name="search-users"),
+    path("clubs/<slug:club_name>/add-member/", AddMemberView.as_view(), name="add-member"),
+
+    # --- AI & SQL Query Endpoints ---
+    path("query/", execute_sql_query, name="execute_sql_query"),  # ✅ SQL query execution
 ]

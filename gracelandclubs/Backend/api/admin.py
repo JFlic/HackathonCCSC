@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import NutritionPlan, User  # Fix import
+from .models import  User, Clubs, Event # Fix import
 
 # Register models in Django Admin
 admin.site.register(User)
-admin.site.register(NutritionPlan)
+admin.site.register(Clubs)
+admin.site.register(Event)

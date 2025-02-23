@@ -1,41 +1,43 @@
 import React, { useState, useEffect } from "react";
 import "./AddEventForm.css";
 
-const AddEventForm = ({ initialDate, onAddEvent, onClose }) => {
-  const [title, setTitle] = useState("");
+const AddEventForm = ({ initialData, initialDate, onAddEvent, onClose }) => {
+  const [name, setName] = useState("");
   const [date, setDate] = useState(initialDate || "");
   const [description, setDescription] = useState("");
 
+  // ✅ Populate form with existing event data when editing
   useEffect(() => {
-    if (initialDate) {
-      setDate(initialDate);
+    if (initialData) {
+      setName(initialData.name || "");
+      setDate(initialData.date || initialDate || "");
+      setDescription(initialData.description || "");
     }
-  }, [initialDate]);
+  }, [initialData, initialDate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newEvent = { title, date, description };
-    onAddEvent(newEvent);
-    // Optionally reset the form:
-    setTitle("");
-    setDate("");
-    setDescription("");
+    const eventDetails = {
+      id: initialData?.id,  // ✅ Include ID if editing
+      name,
+      date,
+      description,
+    };
+    onAddEvent(eventDetails); // ✅ Send back the updated event
     onClose();
   };
 
   return (
     <div className="add-event-form-overlay">
       <div className="add-event-form-container">
-        <button className="close-button" onClick={onClose}>
-          X
-        </button>
+        <button className="close-button" onClick={onClose}>X</button>
         <form onSubmit={handleSubmit}>
-          <h2>Add Event</h2>
+          <h2>{initialData ? "Edit Event" : "Add Event"}</h2>
           <label>Title</label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
           <label>Date</label>
@@ -50,7 +52,7 @@ const AddEventForm = ({ initialDate, onAddEvent, onClose }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <button type="submit">Add Event</button>
+          <button type="submit">{initialData ? "Update Event" : "Add Event"}</button>
         </form>
       </div>
     </div>

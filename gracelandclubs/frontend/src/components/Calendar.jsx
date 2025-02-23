@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import AddEventForm from "./AddEventForm";
 import "./Calendar.css";
 
-// Helper: Format a Date object as "YYYY-MM-DD"
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+// 🔥 FIX: Use local timezone for formatting dates
 const formatDate = (dateObj) => {
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -10,169 +12,210 @@ const formatDate = (dateObj) => {
   return `${year}-${month}-${day}`;
 };
 
-// Helper: Get the number of days in a given month (0-indexed)
-const getDaysInMonth = (year, month) => {
-  return new Date(year, month + 1, 0).getDate();
-};
-
-// Generate a grid (42 cells) for the calendar view of a given month/year.
+// 🔥 FIX: Generate calendar using local dates instead of UTC
 const generateCalendarDays = (year, month) => {
   const days = [];
   const firstDayOfMonth = new Date(year, month, 1);
-  const firstWeekday = firstDayOfMonth.getDay();
-  const daysInCurrentMonth = getDaysInMonth(year, month);
-  const daysInPrevMonth = getDaysInMonth(
-    month === 0 ? year - 1 : year,
-    month === 0 ? 11 : month - 1
-  );
+  const firstWeekday = firstDayOfMonth.getDay(); // 0 (Sunday) to 6 (Saturday)
+  const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-  // Leading days from previous month
-  for (let i = 0; i < firstWeekday; i++) {
-    const date = new Date(year, month - 1, daysInPrevMonth - firstWeekday + i + 1);
-    days.push({ date, inCurrentMonth: false });
+  // 🔥 FIX: Ensure leading days correctly align the first row
+  for (let i = firstWeekday - 1; i >= 0; i--) {
+    days.push({ date: new Date(year, month - 1, daysInPrevMonth - i), inCurrentMonth: false });
   }
 
-  // Days in current month
+  // ✅ Add current month days
   for (let day = 1; day <= daysInCurrentMonth; day++) {
-    const date = new Date(year, month, day);
-    days.push({ date, inCurrentMonth: true });
+    days.push({ date: new Date(year, month, day), inCurrentMonth: true });
   }
 
-  // Trailing days from next month to complete 42 cells
-  const remainingCells = 42 - days.length;
-  for (let i = 1; i <= remainingCells; i++) {
-    const date = new Date(year, month + 1, i);
-    days.push({ date, inCurrentMonth: false });
+  // 🔥 FIX: Ensure the calendar grid always contains **42 days** (6 weeks)
+  while (days.length < 42) {
+    const nextMonthDay = days.length - daysInCurrentMonth - firstWeekday + 1;
+    days.push({ date: new Date(year, month + 1, nextMonthDay), inCurrentMonth: false });
   }
+
   return days;
 };
 
-const Calendar = ({
-  preview,
-  selectedDay, // Lifted selected day from Dashboard (a full day object)
-  onDaySelect, // Callback used in preview mode to lift the day
-}) => {
-  const isPreview = preview === true;
-  const containerClass = isPreview ? "calendar-container preview-mode" : "calendar-container";
-
-  // Full Calendar state (only used in full mode)
+const Calendar = ({ user }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [events, setEvents] = useState([]);
-  const [showEventForm, setShowEventForm] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(""); // Pre-populate AddEventForm
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [showEventPopup, setShowEventPopup] = useState(false);
+  const [showAddEventForm, setShowAddEventForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [showAllEvents, setShowAllEvents] = useState(false);
 
   const calendarDays = generateCalendarDays(currentYear, currentMonth);
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  const fetchEvents = useCallback(async () => {
+    setLoadingEvents(true);
+    const token = localStorage.getItem("token");
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((prev) => prev - 1);
-    } else {
-      setCurrentMonth((prev) => prev - 1);
+    if (!token) {
+      console.warn("No token found. Redirecting to login...");
+      setLoadingEvents(false);
+      return;
     }
+
+    let requestUrl;
+    if (showAllEvents) {
+      requestUrl = `${API_BASE_URL}/events/?year=${currentYear}&month=${currentMonth + 1}`;
+    } else {
+      if (!user || !user.club_list || user.club_list.length === 0) {
+        console.warn("User is not in any clubs.");
+        setLoadingEvents(false);
+        return;
+      }
+      const clubName = encodeURIComponent(user.club_list[0].name);
+      requestUrl = `${API_BASE_URL}/clubs/${clubName}/${currentYear}/${currentMonth + 1}/events/`;
+    }
+
+    try {
+      console.log(`Fetching events from: ${requestUrl}`);
+      const response = await fetch(requestUrl, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch events");
+
+      let data = await response.json();
+      data = data.map(event => ({ ...event, date: event.date.split("T")[0] }));
+      setEvents(data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, [currentMonth, currentYear, user, showAllEvents]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+  const addOrUpdateEvent = async (eventData) => {
+    const token = localStorage.getItem("token");
+    if (!token || !user || !user.club_list.length) return;
+  
+    const clubName = encodeURIComponent(user.club_list[0].name);
+    const requestUrl = eventData.id
+      ? `${API_BASE_URL}/events/${eventData.id}/`
+      : `${API_BASE_URL}/clubs/${clubName}/${currentYear}/${currentMonth + 1}/events/`;
+  
+    const method = eventData.id ? "PUT" : "POST";
+  
+    try {
+      const response = await fetch(requestUrl, {
+        method,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(eventData),
+      });
+  
+      if (!response.ok) throw new Error("Failed to save event");
+  
+      const savedEvent = await response.json();
+      savedEvent.date = savedEvent.date.split("T")[0];
+  
+      setEvents(prev => eventData.id
+        ? prev.map(evt => (evt.id === eventData.id ? savedEvent : evt)) // ✅ Update existing event
+        : [...prev, savedEvent]); // ✅ Add new event
+  
+      setShowAddEventForm(false);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error("Error saving event:", error);
+    }
+  };
+  const handlePrevMonth = () => {
+    setCurrentMonth(prev => (prev === 0 ? 11 : prev - 1));
+    setCurrentYear(prev => (currentMonth === 0 ? prev - 1 : prev));
   };
 
   const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((prev) => prev + 1);
-    } else {
-      setCurrentMonth((prev) => prev + 1);
-    }
+    setCurrentMonth(prev => (prev === 11 ? 0 : prev + 1));
+    setCurrentYear(prev => (currentMonth === 11 ? prev + 1 : prev));
   };
 
-  // When a day cell is clicked:
   const handleDayClick = (dayObj) => {
-    if (!dayObj || !dayObj.inCurrentMonth) return;
-    if (isPreview && onDaySelect) {
-      // In preview mode, lift the selected day to Dashboard.
-      onDaySelect(dayObj);
-    } else {
-      // In full mode, open the Add Event form with the day pre-populated.
-      setSelectedDate(formatDate(dayObj.date));
-      setShowEventForm(true);
-    }
+    if (!dayObj.inCurrentMonth) return;
+    setSelectedDay(dayObj.date);
+    setShowEventPopup(true);
   };
 
-  // Filter events for a given day.
-  const eventsForDay = (dayObj) => {
-    return events.filter((event) => event.date === formatDate(dayObj.date));
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setShowAddEventForm(true);
+  };
+  
+  const handleClosePopup = () => {
+    setShowEventPopup(false);
+    setEditingEvent(null);
   };
 
-  // In full mode, if Dashboard passes a selectedDay, automatically open the Add Event form.
-  useEffect(() => {
-    if (!isPreview && selectedDay) {
-      setSelectedDate(formatDate(selectedDay.date));
-      setShowEventForm(true);
-    }
-  }, [isPreview, selectedDay]);
+  const isUserEvent = (event) => user.club_list.some(club => club.name === event.club_name);
 
   return (
-    <div className={containerClass}>
+    <div className="calendar-container">
       <h1>Event Calendar</h1>
-      {/* Month Navigation */}
+
       <div className="calendar-controls">
         <button onClick={handlePrevMonth}>Previous</button>
-        <span>
-          {monthNames[currentMonth]} {currentYear}
-        </span>
+        <span>{monthNames[currentMonth]} {currentYear}</span>
         <button onClick={handleNextMonth}>Next</button>
-      </div>
-      {/* Only show Add Event button in full mode if form is not already open */}
-      {!isPreview && !showEventForm && (
-        <button
-          className="show-event-form-button"
-          onClick={() => {
-            setSelectedDate("");
-            setShowEventForm(true);
-          }}
-        >
-          Add Event
+        <button onClick={() => setShowAllEvents(prev => !prev)}>
+          {showAllEvents ? "Show My Club Events" : "Show Availability"}
         </button>
-      )}
-      {/* Render AddEventForm if needed (only in full mode) */}
-      {!isPreview && showEventForm && (
-        <AddEventForm
-          initialDate={selectedDate}
-          onAddEvent={(newEvent) => {
-            setEvents((prev) => [...prev, newEvent]);
-          }}
-          onClose={() => setShowEventForm(false)}
-        />
-      )}
-      {/* Calendar Grid */}
+      </div>
+
       <div className="calendar-grid">
-        <div className="weekday-header">Sun</div>
-        <div className="weekday-header">Mon</div>
-        <div className="weekday-header">Tue</div>
-        <div className="weekday-header">Wed</div>
-        <div className="weekday-header">Thu</div>
-        <div className="weekday-header">Fri</div>
-        <div className="weekday-header">Sat</div>
         {calendarDays.map((dayObj, idx) => (
-          <div
-            key={idx}
-            className={`calendar-day ${dayObj.inCurrentMonth ? "current-month" : "other-month"}`}
-            onClick={() => handleDayClick(dayObj)}
-          >
+          <div key={idx} className={`calendar-day ${dayObj.inCurrentMonth ? "current-month" : "other-month"}`} onClick={() => handleDayClick(dayObj)}>
             <div className="calendar-day-number">{dayObj.date.getDate()}</div>
             <div className="calendar-events">
-              {eventsForDay(dayObj).map((evt, i) => (
-                <div key={i} className="calendar-event">
-                  <strong>{evt.title}</strong>
+              {events.filter(evt => evt.date === formatDate(dayObj.date)).map(evt => (
+                <div key={evt.id} className={`calendar-event ${isUserEvent(evt) ? "user-event" : "other-club-event"}`}>
+                  <strong>{evt.name}</strong>
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {showEventPopup && selectedDay && (
+        <div className="event-popup">
+          <div className="popup-content">
+            <h2>Events for {formatDate(selectedDay)}</h2>
+            {events.filter(evt => evt.date === formatDate(selectedDay)).map(evt => (
+              <div key={evt.id} className={`popup-event ${isUserEvent(evt) ? "user-event" : "other-club-event"}`}>
+                <strong>{evt.name}</strong>
+                <p>{evt.description}</p>
+                {isUserEvent(evt) && <button onClick={() => handleEditEvent(evt)}>Edit</button>}
+              </div>
+            ))}
+            <button onClick={() => setShowAddEventForm(true)}>Add Event</button>
+            <button onClick={handleClosePopup}>Close</button>
+          </div>
+        </div>
+      )}
+
+{showAddEventForm && (
+  <AddEventForm
+    initialData={editingEvent}  // ✅ Pass the event being edited
+    initialDate={selectedDay}
+    onAddEvent={addOrUpdateEvent}
+    onClose={() => {
+      setShowAddEventForm(false);
+      setEditingEvent(null);  // ✅ Reset editing state
+    }}
+  />
+)}
     </div>
   );
 };

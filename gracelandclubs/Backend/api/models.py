@@ -1,22 +1,47 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# ✅ Users
 class User(AbstractUser):
-    username = models.CharField(max_length=255, unique=True)  # Cannot be null
-    # Removed default password for security reasons
-    email = models.EmailField(unique=True, null=True, blank=True)  # Email is now properly an EmailField
-    clubs = models.ForeignKey('Clubs', on_delete=models.SET_NULL, null=True, blank=True)
+    email = models.EmailField(unique=True, blank=False, null=False)  # ✅ Make email required
+    
+    # ✅ Define a ManyToManyField for clubs the user is a member of
+    clubs = models.ManyToManyField(
+        'Clubs', 
+        related_name="club_members",  # ✅ Avoids conflict with `Clubs.members`
+        blank=True
+    )
 
     def __str__(self):
         return self.username
 
-# ✅ Clubs 
+
 class Clubs(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to User
-    name = models.CharField(max_length=255, default="Standard Plan")  # Plan name
-    description = models.TextField(default="Enter Description Here:")  # Plan overview
+    owner = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name="owned_clubs",  # ✅ Clubs that the user owns
+    )
+    name = models.CharField(max_length=255, unique=True)  # ✅ Ensure unique club names
+    description = models.TextField(default="Enter Description Here:")
+    image_url = models.TextField(default="")  # ✅ Consistent naming and avoids "na"
 
-    # General Information
-    imageurl = models.TextField(default="na")
+    # ✅ Many-to-many relationship with users who are members
+    members = models.ManyToManyField(
+        User, 
+        related_name="club_list",  # ✅ Avoids conflict with `User.clubs`
+        blank=True
+    )
 
+    def __str__(self):
+        return self.name
+
+
+class Event(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateTimeField(null=True, blank=True)  # ✅ Allows flexibility in event scheduling
+    image_url = models.URLField(blank=True, null=True)
+    club = models.ForeignKey(Clubs, on_delete=models.CASCADE, related_name="events")
+
+    def __str__(self):
+        return f"{self.name} - {self.club.name}"

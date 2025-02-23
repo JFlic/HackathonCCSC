@@ -19,7 +19,7 @@ function App() {
   useEffect(() => {
     checkAuth();
   }, []);
-
+console.log(currentPage)
   return (
     <div>
       {currentPage === "login" && (

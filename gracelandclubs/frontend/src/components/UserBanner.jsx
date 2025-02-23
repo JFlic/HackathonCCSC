@@ -1,10 +1,11 @@
 import React from "react";
 import './UserBanner.css'; // Import the CSS file
 
-const UserBanner = () => {
+// Adding a prop parameter to the function
+const UserBanner = ({ user }) => {
   return (
-    <div className="user-banner">
-      {/* Removed text content */}
+    <div className="leader-intro">
+      <h1>Welcome, {user}!</h1>
     </div>
   );
 };

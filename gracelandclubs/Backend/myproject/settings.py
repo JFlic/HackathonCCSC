@@ -12,15 +12,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # 🚀 SECURITY IMPROVEMENTS
 # Use environment variables for the secret key
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),  # ✅ Token lasts for 12 hours
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),   # ✅ Refresh token valid for 7 days
+    "ROTATE_REFRESH_TOKENS": True,                 # ✅ Automatically rotate refresh token
+    "BLACKLIST_AFTER_ROTATION": True,              # ✅ Old refresh tokens are invalidated
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
@@ -96,7 +107,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "nutrican_project.db",
+'NAME': BASE_DIR / "db.sqlite3",
     }
 }
 AUTH_USER_MODEL = 'api.User'  # Replace 'yourapp' with your actual app name
