@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"; // ✅ Added missing import
 import "./App.css";
 import LoginRegister from "./components/LoginRegister"; // Login Page
 import Dashboard from "./components/Dashboard"; // ✅ Import Dashboard component
-
+import SerpApiEvents from "./components/UserBoard";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState("login"); // Default page
@@ -22,13 +22,7 @@ function App() {
 
   return (
     <div>
-      {currentPage === "login" && (
-        <LoginRegister checkAuth={checkAuth} setCurrentPage={setCurrentPage} />
-      )}
-      {currentPage === "dashboard" && (
-        <Dashboard checkAuth={checkAuth} setCurrentPage={setCurrentPage} />
-      )}
-
+     <SerpApiEvents></SerpApiEvents>
     </div>
   );
 }

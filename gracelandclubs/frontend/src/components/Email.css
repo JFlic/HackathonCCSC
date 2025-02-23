@@ -1,31 +1,129 @@
+/* Container for the email component */
 .email-container {
-    background-color: #fef4ea;
-    padding: 20px;
+    background: #fef4ea;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-.email-container h2 {
-    margin-top: 0;
-    color: #333;
-}
-
-.email-container p {
-    color: #333;
-}
-
-.email-button {
-    padding: 10px 20px;
-    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 650px;
+    margin: 10px auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  
+  /* Lists (members and search results) */
+  .members-list,
+  .member-list,
+  .search-results {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+  }
+  
+  /* Member item styling */
+  .member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .member-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Remove member button styling */
+  .remove-member-button,
+  .remove-button {
+    background-color: #e74c3c;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
-    background-color: #fa5c35;
-    color: #fff;
+    padding: 6px 12px;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
+    border-radius: 4px;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .remove-member-button:hover,
+  .remove-button:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Email textarea styling */
+  /* Email textarea styling */
+  .email-textarea {
+    width: 70%;
+    height: 120px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #3d566b;
+    border-radius: 4px;
+    font-size: 1rem;
+    resize: vertical;
+    background-color: white;
+  }
 
-.email-button:hover {
-    background-color: #e04b2f;
-} 
+  
+  /* Email send button styling */
+  .email-button {
+    background-color: #3d566b;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-left: 25px;
+  }
+  
+  .email-button:hover {
+    background-color: #2c3e50;
+  }
+  
+  /* Search container styling */
+  .search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .search-container input[type="text"] {
+    flex: 1;
+    padding: 8px 10px;
+    background-color: white;
+  
+    border: 1px solid #3d566b;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .search-container button {
+    background-color: #3d566b;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    
+  }
+  
+  .search-container button:hover {
+    background-color: #2c3e50;
+  }
+  
+  /* Search results item styling */
+  .search-results li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .search-results li:last-child {
+    border-bottom: none;
+  }
+  

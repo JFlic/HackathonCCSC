@@ -1,0 +1,93 @@
+.custom-calendar-container {
+    max-width: 500px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #007BFF;
+    color: #fff;
+    border-radius: 6px;
+  }
+  
+  .nav-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .month-year {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .day-names {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .day-name {
+    padding: 8px 0;
+  }
+  
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+    margin-top: 5px;
+  }
+  
+  .day-cell {
+    padding: 10px;
+    min-height: 50px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+  }
+  
+  .day-cell:hover {
+    background: #f0f8ff;
+  }
+  
+  .day-cell.selected {
+    background: #e0f0ff;
+    font-weight: bold;
+    color: #007BFF;
+  }
+  
+  .day-cell.empty {
+    background: transparent;
+    cursor: default;
+  }
+  
+  .day-number {
+    display: block;
+  }
+  
+  .event-indicator {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
