@@ -57,7 +57,12 @@ const Calendar = () => {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [events, setEvents] = useState([]);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(""); // For pre-populating the form
+  const [selectedDate, setSelectedDate] = useState(""); // For pre-populating AddEventForm
+
+  // States for the day cover modal
+  const [showDayCover, setShowDayCover] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null); // holds the day object
+  const [selectedEvent, setSelectedEvent] = useState(null); // holds the event object (if clicked)
 
   // Month names for display
   const monthNames = [
@@ -85,18 +90,22 @@ const Calendar = () => {
     }
   };
 
-  // Open form by clicking a day cell; pre-populate with that date.
-  const handleDayClick = (date) => {
-    // Only allow adding events to days in the current month
-    if (!date) return;
-    const dateStr = formatDate(date);
-    setSelectedDate(dateStr);
-    setShowEventForm(true);
+  // When a day cell is clicked, open the day cover modal.
+  const handleDayClick = (dayObj) => {
+    if (!dayObj || !dayObj.inCurrentMonth) return;
+    setSelectedDay(dayObj);
+    setSelectedEvent(null);
+    setShowDayCover(true);
   };
 
-  // Function to add a new event
+  // Function to add a new event (called from AddEventForm)
   const handleAddEvent = (newEvent) => {
     setEvents((prev) => [...prev, newEvent]);
+  };
+
+  // Get events for a given day (by date string)
+  const eventsForDay = (dayObj) => {
+    return events.filter((event) => event.date === formatDate(dayObj.date));
   };
 
   return (
@@ -112,11 +121,11 @@ const Calendar = () => {
         <button onClick={handleNextMonth}>Next</button>
       </div>
 
-      {/* Optional: Button to open form manually */}
+      {/* Optional: Button to open the AddEventForm manually */}
       <button
         className="show-event-form-button"
         onClick={() => {
-          setSelectedDate(""); // Clear any pre-selected date
+          setSelectedDate("");
           setShowEventForm(true);
         }}
       >
@@ -144,24 +153,29 @@ const Calendar = () => {
         <div className="weekday-header">Sat</div>
 
         {calendarDays.map((dayObj, idx) => {
-          const dateStr = formatDate(dayObj.date);
-          const dayEvents = events.filter((event) => event.date === dateStr);
+          const dayEvents = eventsForDay(dayObj);
           return (
             <div
               key={idx}
               className={`calendar-day ${
                 dayObj.inCurrentMonth ? "current-month" : "other-month"
-              }`}
-              onClick={() => dayObj.inCurrentMonth && handleDayClick(dayObj.date)}
+              } ${selectedDay && formatDate(selectedDay.date) === formatDate(dayObj.date) ? "selected-day" : ""}`}
+              onClick={() => handleDayClick(dayObj)}
             >
               <div className="calendar-day-number">
                 {dayObj.date.getDate()}
               </div>
               <div className="calendar-events">
                 {dayEvents.map((evt, i) => (
-                  <div key={i} className="calendar-event">
+                  <div 
+                    key={i} 
+                    className={`calendar-event ${selectedEvent === evt ? "selected-event" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent day cell click
+                      setSelectedEvent(evt);
+                    }}
+                  >
                     <strong>{evt.title}</strong>
-                    {evt.description && <p>{evt.description}</p>}
                   </div>
                 ))}
               </div>
@@ -169,6 +183,41 @@ const Calendar = () => {
           );
         })}
       </div>
+
+      {/* Day Cover Modal */}
+      {showDayCover && selectedDay && (
+        <div className="day-cover-overlay">
+          <div className="day-cover-container">
+            <button className="close-button" onClick={() => setShowDayCover(false)}>X</button>
+            <h2>Events for {formatDate(selectedDay.date)}</h2>
+            <div className="day-events-list">
+              {eventsForDay(selectedDay).length > 0 ? (
+                eventsForDay(selectedDay).map((evt, i) => (
+                  <div 
+                    key={i} 
+                    className={`day-event ${selectedEvent === evt ? "selected" : ""}`}
+                    onClick={() => setSelectedEvent(evt)}
+                  >
+                    <strong>{evt.title}</strong>
+                    {evt.description && <p>{evt.description}</p>}
+                  </div>
+                ))
+              ) : (
+                <p>No events for this day.</p>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setShowDayCover(false);
+                setSelectedDate(formatDate(selectedDay.date));
+                setShowEventForm(true);
+              }}
+            >
+              Add Event
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

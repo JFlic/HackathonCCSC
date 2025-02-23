@@ -8,7 +8,7 @@ const API_BASE_URL = "http://127.0.0.1:8000/api"; // Adjust as needed
 // Mock data for development
 const mockUserData = {
   id: 1,
-  username: "johndoe",
+  username: "Programming Club",
   email: "johndoe@example.com",
   age: 25,
   activity_level: "Moderate",

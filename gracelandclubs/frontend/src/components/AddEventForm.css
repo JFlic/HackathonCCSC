@@ -1,63 +1,65 @@
 .add-event-form-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .add-event-form-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-  }
-  
-  /* Close button styles */
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    background: transparent;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-  }
-  
-  .add-event-form-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .add-event-form-container input,
-  .add-event-form-container textarea {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .add-event-form-container button[type="submit"] {
-    padding: 10px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    background-color: #28a745;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .add-event-form-container button[type="submit"]:hover {
-    background-color: #218838;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Make sure this is higher than the docx preview container */
+}
+
+.add-event-form-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  /* If you want the modal content to have an even higher z-index: */
+  /* z-index: 10000; */
+}
+
+/* Close button styles */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.add-event-form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-event-form-container input,
+.add-event-form-container textarea {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-event-form-container button[type="submit"] {
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-event-form-container button[type="submit"]:hover {
+  background-color: #218838;
+}
