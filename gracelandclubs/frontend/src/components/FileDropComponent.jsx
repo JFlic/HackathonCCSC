@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./FileDropComponent.css";
 import { renderAsync } from "docx-preview";
 
-const FileDropComponent = () => {
+const FileDropComponent = ({ preview }) => {
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -13,7 +13,7 @@ const FileDropComponent = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewText, setPreviewText] = useState(null);
 
-  // For docx preview
+  // For DOCX preview
   const [docxHtml, setDocxHtml] = useState("");
 
   // Toggle this flag to false when your API is live.
@@ -78,20 +78,16 @@ const FileDropComponent = () => {
       setDocxHtml("");
       return;
     }
-
     console.log("File selected:", file);
-
-    // 1) Check for docx (by extension or MIME type).
+    // 1) Check for DOCX (by extension or MIME type).
     if (
       file.name.toLowerCase().endsWith(".docx") ||
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       console.log("DOCX file detected. Rendering with docx-preview...");
       handleDocxPreview(file);
       return;
     }
-
     // 2) If the file is an image, generate a data URL.
     if (file.type.startsWith("image/")) {
       const reader = new FileReader();
@@ -104,7 +100,6 @@ const FileDropComponent = () => {
       reader.readAsDataURL(file);
       return;
     }
-
     // 3) If the file is a text file, read as text.
     if (file.type.startsWith("text/")) {
       const reader = new FileReader();
@@ -117,7 +112,6 @@ const FileDropComponent = () => {
       reader.readAsText(file);
       return;
     }
-
     // 4) Otherwise, not a supported preview type.
     console.log("File type not supported for preview.");
     setPreviewUrl(null);
@@ -157,7 +151,6 @@ const FileDropComponent = () => {
       // Real API call
       const formData = new FormData();
       formData.append("file", file);
-
       try {
         const response = await fetch(BACKEND_URL, {
           method: "POST",
@@ -178,7 +171,7 @@ const FileDropComponent = () => {
   };
 
   return (
-    <div className="file-drop-container">
+    <div className={`file-drop-container ${preview ? "preview-mode" : ""}`}>
       <h2>Drop your file below for corrections</h2>
       <div
         className={`file-drop-area ${dragOver ? "drag-over" : ""}`}

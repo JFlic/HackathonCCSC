@@ -5,9 +5,8 @@ import Sidebar from "./Sidebar";
 import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api"; // Adjust as needed
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-// Mock data for development
 const mockUserData = {
   id: 1,
   username: "Programming Club",
@@ -31,10 +30,9 @@ const mockUserData = {
   ],
 };
 
-const items = ["Home", "About", "Services", "Contact"];
+const SIDEBAR_ITEMS = ["Home", "Calendar", "Finance", "File"];
 
 const Dashboard = ({ setCurrentPage }) => {
-  // Dummy finance data moved inside the component
   const [financeData] = useState({
     fund: 10000.0,
     purchases: [
@@ -45,22 +43,20 @@ const Dashboard = ({ setCurrentPage }) => {
     ],
   });
 
-  // Compute current funds: total fund minus the sum of purchase amounts
   const totalFund = financeData.fund;
-  const totalPurchases = financeData.purchases.reduce(
-    (sum, purchase) => sum + purchase.amount,
-    0
-  );
+  const totalPurchases = financeData.purchases.reduce((sum, p) => sum + p.amount, 0);
   const currentFund = totalFund - totalPurchases;
 
-  // Dashboard state
-  const [activeItem, setActiveItem] = useState("Home");
+  const [activePage, setActivePage] = useState("Home");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedClub, setSelectedClub] = useState(null);
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState(null);
+  const [calendarPrepopulatedDay, setCalendarPrepopulatedDay] = useState(null);
 
   const handleItemSelect = (item) => {
-    setActiveItem(item);
+    setActivePage(item);
+    if (item !== "Calendar") setCalendarPrepopulatedDay(null);
   };
 
   useEffect(() => {
@@ -70,7 +66,6 @@ const Dashboard = ({ setCurrentPage }) => {
         setCurrentPage("login");
         return;
       }
-
       try {
         const response = await fetch(`${API_BASE_URL}/user/`, {
           method: "GET",
@@ -79,16 +74,12 @@ const Dashboard = ({ setCurrentPage }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          throw new Error("Failed to fetch user data");
-        }
+        if (!response.ok) throw new Error("Failed to fetch user data");
+        const data = await response.json();
+        setUser(data);
       } catch (err) {
         console.warn("API request failed, using mock data...");
-        setUser(mockUserData); // Use mock data on error
+        setUser(mockUserData);
       } finally {
         setLoading(false);
       }
@@ -99,60 +90,130 @@ const Dashboard = ({ setCurrentPage }) => {
 
   if (loading) return <p className="loading-text">Loading...</p>;
 
+  const renderContent = () => {
+    switch (activePage) {
+      case "Home":
+        return (
+          <div className="dashboard-home">
+            <h2>Welcome, {user?.username}!</h2>
+            <div className="user-info">
+              <p>
+                <strong>Email:</strong> {user?.email}
+              </p>
+              <p>
+                <strong>Age:</strong> {user?.age}
+              </p>
+              <p>
+                <strong>Activity Level:</strong> {user?.activity_level}
+              </p>
+            </div>
+            <h3>Your Clubs:</h3>
+            <ul className="club-list">
+              {user?.clubs?.map((club) => (
+                <li
+                  key={club.id}
+                  onClick={() => {
+                    setSelectedClub(club);
+                    setActivePage("ClubDetail");
+                  }}
+                >
+                  {club.name}
+                </li>
+              ))}
+            </ul>
+            <div className="shortcuts-container">
+              <div className="shortcut-column left">
+                <div className="shortcut-card">
+                  <Calendar
+                    preview
+                    selectedDay={selectedCalendarDay}
+                    onDaySelect={setSelectedCalendarDay}
+                  />
+                </div>
+              </div>
+              <div className="shortcut-column right">
+                <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("Finance")}
+                >
+                  <ClubFinance
+                    totalFund={totalFund}
+                    currentFund={currentFund}
+                    purchases={financeData.purchases}
+                    preview
+                  />
+                </div>
+                <div
+                  className="shortcut-card"
+                  onClick={() => setActivePage("File")}
+                >
+                  <FileDropComponent preview />
+                </div>
+              </div>
+            </div>
+            {selectedCalendarDay && (
+              <div className="day-modal-overlay animate-fadeIn">
+                <div className="day-modal-container animate-slideUp">
+                  <button
+                    className="close-button"
+                    onClick={() => setSelectedCalendarDay(null)}
+                  >
+                    X
+                  </button>
+                  <h2>
+                    {`Day ${selectedCalendarDay.date.getDate()} - ${selectedCalendarDay.date.toLocaleDateString()}`}
+                  </h2>
+                  <p>No events for this day.</p>
+                  <button
+                    onClick={() => {
+                      setCalendarPrepopulatedDay(selectedCalendarDay);
+                      setSelectedCalendarDay(null);
+                      setActivePage("Calendar");
+                    }}
+                  >
+                    Add Event
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      case "Calendar":
+        return <Calendar selectedDay={calendarPrepopulatedDay} />;
+      case "Finance":
+        return (
+          <ClubFinance
+            totalFund={totalFund}
+            currentFund={currentFund}
+            purchases={financeData.purchases}
+          />
+        );
+      case "File":
+        return <FileDropComponent />;
+      case "ClubDetail":
+        return (
+          <div className="club-card">
+            <button className="back-button" onClick={() => setActivePage("Home")}>
+              Back
+            </button>
+            <h3>{selectedClub?.name}</h3>
+            <p>{selectedClub?.description}</p>
+            <img src={selectedClub?.imageurl} alt={selectedClub?.name} />
+          </div>
+        );
+      default:
+        return <div>Page not found</div>;
+    }
+  };
+
   return (
     <div className="dashboard-container">
       <Sidebar
-        items={items}
-        activeItem={activeItem}
+        items={SIDEBAR_ITEMS}
+        activeItem={activePage}
         onItemSelect={handleItemSelect}
       />
-
-      <div className="dashboard-content">
-        <h2>Welcome, {user?.username}!</h2>
-        <div className="user-info">
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
-          <p>
-            <strong>Age:</strong> {user?.age}
-          </p>
-          <p>
-            <strong>Activity Level:</strong> {user?.activity_level}
-          </p>
-        </div>
-
-     
-
-        <h3>Your Clubs:</h3>
-        <ul className="club-list">
-          {user?.clubs?.map((club) => (
-            <li key={club.id} onClick={() => setSelectedClub(club)}>
-              {club.name}
-            </li>
-          ))}
-        </ul>
-
-        <Calendar />
-
-        {selectedClub && (
-          <div className="club-card">
-            <h3>{selectedClub.name}</h3>
-            <p>{selectedClub.description}</p>
-            <img src={selectedClub.imageurl} alt={selectedClub.name} />
-          </div>
-        )}
-      </div>
-   {/* ClubFinance component with total and current funds */}
-  <div>
-  <ClubFinance
-          totalFund={totalFund}
-          currentFund={currentFund}
-          purchases={financeData.purchases}
-        />
-      <FileDropComponent />
-
-  </div>
-  
+      <div className="dashboard-content">{renderContent()}</div>
     </div>
   );
 };
