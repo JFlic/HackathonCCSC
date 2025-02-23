@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+import ClubFinance from "./ClubFinance";
 import Sidebar from "./Sidebar";
 import Calendar from "./Calendar";
 import FileDropComponent from "./FileDropComponent";
+
 const API_BASE_URL = "http://127.0.0.1:8000/api"; // Adjust as needed
 
 // Mock data for development
@@ -18,21 +20,40 @@ const mockUserData = {
       id: 101,
       name: "Programming Club",
       description: "A club for coding enthusiasts.",
-      imageurl: "https://example.com/programming_club.jpg"
+      imageurl: "https://example.com/programming_club.jpg",
     },
     {
       id: 102,
       name: "AI & Machine Learning",
       description: "Exploring the world of AI.",
-      imageurl: "https://example.com/ai_club.jpg"
-    }
-  ]
+      imageurl: "https://example.com/ai_club.jpg",
+    },
+  ],
 };
 
 const items = ["Home", "About", "Services", "Contact"];
 
 const Dashboard = ({ setCurrentPage }) => {
-  // Moved inside the component so hooks are used correctly
+  // Dummy finance data moved inside the component
+  const [financeData] = useState({
+    fund: 10000.0,
+    purchases: [
+      { id: 1, name: "Soccer Ball", amount: 50, date: "2023-02-15" },
+      { id: 2, name: "Team Jerseys", amount: 300, date: "2023-02-20" },
+      { id: 3, name: "Snacks", amount: 20, date: "2023-03-01" },
+      { id: 4, name: "Water Bottles", amount: 100, date: "2023-03-05" },
+    ],
+  });
+
+  // Compute current funds: total fund minus the sum of purchase amounts
+  const totalFund = financeData.fund;
+  const totalPurchases = financeData.purchases.reduce(
+    (sum, purchase) => sum + purchase.amount,
+    0
+  );
+  const currentFund = totalFund - totalPurchases;
+
+  // Dashboard state
   const [activeItem, setActiveItem] = useState("Home");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -85,10 +106,8 @@ const Dashboard = ({ setCurrentPage }) => {
         activeItem={activeItem}
         onItemSelect={handleItemSelect}
       />
-           
 
       <div className="dashboard-content">
-       
         <h2>Welcome, {user?.username}!</h2>
         <div className="user-info">
           <p>
@@ -102,6 +121,8 @@ const Dashboard = ({ setCurrentPage }) => {
           </p>
         </div>
 
+     
+
         <h3>Your Clubs:</h3>
         <ul className="club-list">
           {user?.clubs?.map((club) => (
@@ -110,7 +131,9 @@ const Dashboard = ({ setCurrentPage }) => {
             </li>
           ))}
         </ul>
+
         <Calendar />
+
         {selectedClub && (
           <div className="club-card">
             <h3>{selectedClub.name}</h3>
@@ -119,7 +142,17 @@ const Dashboard = ({ setCurrentPage }) => {
           </div>
         )}
       </div>
-      <FileDropComponent></FileDropComponent>
+   {/* ClubFinance component with total and current funds */}
+  <div>
+  <ClubFinance
+          totalFund={totalFund}
+          currentFund={currentFund}
+          purchases={financeData.purchases}
+        />
+      <FileDropComponent />
+
+  </div>
+  
     </div>
   );
 };
