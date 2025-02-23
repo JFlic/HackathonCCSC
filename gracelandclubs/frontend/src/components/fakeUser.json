@@ -1,0 +1,28 @@
+{
+    "id": 1,
+    "username": "johndoe",
+    "email": "john@example.com",
+    "club_list": [
+      {
+        "id": 101,
+        "name": "Chess Club",
+        "description": "A club for chess enthusiasts.",
+        "members": [
+          { "id": 201, "name": "Alice" },
+          { "id": 202, "name": "Bob" }
+        ],
+        "finances": {
+          "balance": 2500,
+          "income": [
+            { "source": "Membership Fees", "amount": 500 },
+            { "source": "Sponsorship", "amount": 1000 }
+          ],
+          "expenses": [
+            { "item": "Equipment", "amount": 300 },
+            { "item": "Event Costs", "amount": 200 }
+          ]
+        }
+      }
+    ]
+  }
+  

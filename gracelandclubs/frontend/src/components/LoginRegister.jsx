@@ -1,6 +1,35 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import "./LoginRegister.css"; // ✅ Ensure the CSS is imported
+import "./LoginRegister.css";
+
+// Fake user data to use for a successful login
+const fakeUser = {
+  id: 1,
+  username: "johndoe",
+  email: "john@example.com",
+  club_list: [
+    {
+      id: 101,
+      name: "Chess Club",
+      description: "A club for chess enthusiasts.",
+      members: [
+        { id: 201, name: "Alice" },
+        { id: 202, name: "Bob" }
+      ],
+      finances: {
+        balance: 2500,
+        income: [
+          { source: "Membership Fees", amount: 500 },
+          { source: "Sponsorship", amount: 1000 }
+        ],
+        expenses: [
+          { item: "Equipment", amount: 300 },
+          { item: "Event Costs", amount: 200 }
+        ]
+      }
+    }
+  ]
+};
 
 const LoginRegister = ({ checkAuth, setCurrentPage }) => {
   const [isRegister, setIsRegister] = useState(false);
@@ -12,76 +41,53 @@ const LoginRegister = ({ checkAuth, setCurrentPage }) => {
     clubName: "",
   });
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Added loading state
+  const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = "http://127.0.0.1:8000/api"; // ✅ No extra spaces
-
-  // ✅ Toggle Between Register & Login
+  // Toggle between register and login views
   const toggleForm = () => {
     setIsRegister(!isRegister);
-    setMessage(""); // Clear previous messages
-    setFormData({ username: "", email: "", password: "", password2: "", clubName: "" }); // Reset fields
+    setMessage("");
+    setFormData({ username: "", email: "", password: "", password2: "", clubName: "" });
   };
 
-  // ✅ Handle Input Changes
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value.trim() });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // ✅ Handle Form Submission
+  // Simulate API call for login or registration
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // ✅ Show loading state
-    setMessage(""); // ✅ Clear messages
+    setLoading(true);
+    setMessage("");
 
-    const url = isRegister ? `${API_BASE_URL}/register/` : `${API_BASE_URL}/login/`;
-
-    let requestBody = {
-      username: formData.username,
-      password: formData.password,
-    };
-
-    if (isRegister) {
-      requestBody = {
-        ...requestBody,
-        email: formData.email,
-        password2: formData.password2,
-        clubName: formData.clubName,
-      };
-    }
-
-    try {
-      console.log("📤 Sending JSON Payload:", JSON.stringify(requestBody));
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-      console.log("📩 Response JSON:", data);
-
-      if (response.ok) {
-        if (isRegister) {
+    // Simulate network latency with a timeout
+    setTimeout(() => {
+      if (isRegister) {
+        // Fake registration: ensure all fields are filled and passwords match
+        if (!formData.username || !formData.email || !formData.password || !formData.password2 || !formData.clubName) {
+          setMessage("❌ Please fill in all fields.");
+        } else if (formData.password !== formData.password2) {
+          setMessage("❌ Passwords do not match.");
+        } else {
           setMessage("✅ Registration successful! Please log in.");
           toggleForm();
-        } else {
-          localStorage.setItem("token", data.token.access);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          checkAuth();
-          setCurrentPage("dashboard");
         }
       } else {
-        setMessage(data.error || "❌ Something went wrong.");
+        // Fake login: check for dummy credentials (you can update this as needed)
+        if (formData.username === fakeUser.username && formData.password === "password") {
+          // Fake token and user are stored locally
+          localStorage.setItem("token", "faketoken123");
+          localStorage.setItem("user", JSON.stringify(fakeUser));
+          checkAuth();
+          setCurrentPage("dashboard");
+        } else {
+          setMessage("❌ Invalid username or password.");
+        }
       }
-    } catch (error) {
-      console.error("🚨 Server Error:", error);
-      setMessage("❌ Server error. Please try again.");
-    } finally {
-      setLoading(false); // ✅ Stop loading
-    }
+      setLoading(false);
+    }, 1000); // Simulate a 1-second delay
   };
 
   return (
