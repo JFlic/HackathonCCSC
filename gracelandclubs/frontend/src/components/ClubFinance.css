@@ -1,0 +1,63 @@
+.club-finance {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fafafa;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .club-finance h2,
+  .club-finance h3 {
+    margin-top: 0;
+  }
+  
+  .fund-amount {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .purchase-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .purchase-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s;
+    cursor: pointer;
+  }
+  
+  .purchase-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .purchase-name {
+    flex: 2;
+    font-weight: bold;
+  }
+  
+  .purchase-amount {
+    flex: 1;
+    text-align: right;
+    margin-right: 10px;
+  }
+  
+  .purchase-date {
+    flex: 1;
+    text-align: right;
+    color: #666;
+  }
+  .club-dashboard {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+  }
