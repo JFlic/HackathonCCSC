@@ -1,23 +1,30 @@
 # app.py
 from fastapi import FastAPI, UploadFile, File
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
 from pydantic import BaseModel
 from typing import List
 import docx
 import PyPDF2
 import io
+import json
+import openai
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize FastAPI app
 app = FastAPI()
 
-# Load model and tokenizer
-model_name = "mistralai/Mistral-7B-Instruct-v0.2"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    torch_dtype=torch.float16,  # Use float16 for memory efficiency
-    device_map="auto"  # Automatically handle device placement
+# Initialize OpenAI client with API key from .env
+client = OpenAI(
+    api_key=os.getenv('OPENAI_API_KEY')
 )
+
+# Verify API key is loaded
+if not os.getenv('OPENAI_API_KEY'):
+    raise ValueError("OpenAI API key not found. Please check your .env file.")
 
 FUNDING_REQUIREMENTS = """
 Please analyze this appropriation form against these requirements:
@@ -47,42 +54,74 @@ def extract_text(file_content: bytes, file_type: str) -> str:
 
 def generate_prompt(form_content: str) -> str:
     """Generate the prompt for the AI model."""
-    return f"""<s>[INST] Here is an appropriation form content:
+    return f"""You are an assistant that analyzes funding request forms. 
+Please analyze the following appropriation form content:
 
 {form_content}
 
-{FUNDING_REQUIREMENTS}[/INST]"""
+{FUNDING_REQUIREMENTS}
+
+Remember to format your response as a valid JSON object with 'issues' and 'recommendations' arrays."""
+
+async def analyze_with_openai(prompt: str) -> dict:
+    """Send prompt to OpenAI and get analysis."""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",  # or another appropriate model
+            messages=[
+                {"role": "system", "content": "You are a funding request analyzer that responds in JSON format."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        
+        # Extract the response text
+        response_text = response.choices[0].message.content
+        
+        # Parse JSON response
+        try:
+            return json.loads(response_text)
+        except json.JSONDecodeError:
+            # If JSON parsing fails, try to extract JSON-like content
+            import re
+            json_pattern = r'\{.*\}'
+            match = re.search(json_pattern, response_text, re.DOTALL)
+            if match:
+                return json.loads(match.group())
+            else:
+                return {
+                    "issues": ["Error parsing model response"],
+                    "recommendations": ["The model response was not in valid JSON format"]
+                }
+                
+    except Exception as e:
+        return {
+            "issues": [f"Error calling OpenAI API: {str(e)}"],
+            "recommendations": ["Please try again later"]
+        }
 
 @app.post("/analyze-form")
 async def analyze_form(file: UploadFile = File(...)):
-    # Read and extract text from the uploaded file
-    content = await file.read()
-    text = extract_text(content, file.content_type)
-    
-    # Generate prompt and get model response
-    prompt = generate_prompt(text)
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    
-    with torch.no_grad():
-        outputs = model.generate(
-            inputs["input_ids"],
-            max_new_tokens=500,
-            temperature=0.7,
-            top_p=0.95,
-            do_sample=True
-        )
-    
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    # Parse the response (assuming model returns JSON-formatted string)
-    # In practice, you might need more robust parsing
+    """Endpoint to analyze uploaded funding request forms."""
     try:
-        import json
-        analysis = json.loads(response)
-    except:
-        analysis = {
-            "issues": ["Error parsing model response"],
-            "recommendations": ["Please try again"]
+        # Read and extract text from the uploaded file
+        content = await file.read()
+        text = extract_text(content, file.content_type)
+        
+        # Generate prompt and get OpenAI analysis
+        prompt = generate_prompt(text)
+        analysis = await analyze_with_openai(prompt)
+        
+        return analysis
+        
+    except Exception as e:
+        return {
+            "issues": [f"Error processing form: {str(e)}"],
+            "recommendations": ["Please check the file format and try again"]
         }
-    
-    return analysis
+
+# Additional endpoint for health check
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "api_key_configured": bool(os.getenv('OPENAI_API_KEY'))}
