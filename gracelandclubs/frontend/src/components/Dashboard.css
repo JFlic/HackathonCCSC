@@ -1,6 +1,5 @@
 /* Base body styles */
 body {
-<<<<<<< HEAD
   margin: 0;
   background-color: #f5f5f5; 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -49,27 +48,6 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
-=======
-    margin: 0;
-    background-color: #ffffff; /* Updated background color */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #3d566b; /* Dark text for good contrast */
-  }
-  
-  /* Container for the entire dashboard */
-  .dashboard-container {
-    display: flex;
-    min-height: 100vh;
-    background-color: #ffffff; /* Set background color to white */
-    /* If you want the sidebar to remain at the left at all times, 
-       you can use a full-height approach here:
-       position: relative; 
-    */
->>>>>>> 61e773ef7a6ab40782e95c178d7604769c91d085
   }
 }
 
@@ -117,7 +95,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-<<<<<<< HEAD
 }
 
 /* User info styling */
@@ -222,20 +199,6 @@ body {
   }
   to {
     opacity: 1;
-=======
-  
-  /* Dashboard content area */
-  .dashboard-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #fef4ea; /* Updated background color */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 20px;
-    min-height: calc(100vh - 40px);
-    width: calc(100% - 40px);
-    box-sizing: border-box;
->>>>>>> 61e773ef7a6ab40782e95c178d7604769c91d085
   }
 }
 
@@ -254,7 +217,6 @@ body {
     transform: translateY(20px);
     opacity: 0;
   }
-<<<<<<< HEAD
   to {
     transform: translateY(0);
     opacity: 1;
@@ -305,49 +267,3 @@ body {
   font-size: 24px;
   cursor: pointer;
 }
-=======
-  
-  /* Club list styles */
-  .club-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
-  }
-  
-  .club-list li {
-    cursor: pointer;
-    padding: 10px;
-    transition: background-color 0.3s;
-    border-radius: 4px;
-    margin-bottom: 5px;
-  }
-  
-  .club-list li:hover {
-    background-color: #f0f0f0;
-  }
-  
-  /* Club card with a slide-up animation */
-  .club-card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
-  }
-  
-  .club-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  /* User info styling */
-  .user-info p {
-    margin: 5px 0;
-  }
-  
-  .calendar-box {
-    background-color: #ffffff; /* Set calendar box background to white */
-    /* Add any other styles needed for the calendar boxes */
-  }
-  
->>>>>>> 61e773ef7a6ab40782e95c178d7604769c91d085
