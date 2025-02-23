@@ -6,7 +6,7 @@
     height: 50px;
     background-color: #fa5c35;
     padding: 10px 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
     justify-content: center;
