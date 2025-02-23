@@ -12,6 +12,7 @@
   "dependencies": {
     "classnames": "^2.5.1",
     "docx-preview": "^0.3.4",
+    "dotenv": "^16.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-transition-group": "^4.4.5"

@@ -1,9 +1,6 @@
 import React, { useState, useCallback } from "react";
 import "./FileDropComponent.css";
 import { renderAsync } from "docx-preview";
-import dotenv from ".env";
-
-dotenv.config();
 
 const FileDropComponent = ({ preview, onUploadComplete }) => {
   const [dragOver, setDragOver] = useState(false);
@@ -116,7 +113,7 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${process.env.REACT_APP_API_KEY}`, // Correct usage
           },
           body: JSON.stringify({
             model: "gpt-3.5-turbo",
