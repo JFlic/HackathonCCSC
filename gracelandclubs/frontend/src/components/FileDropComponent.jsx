@@ -105,8 +105,8 @@ const FileDropComponent = ({ preview, onUploadComplete }) => {
         const response = await fetch(BACKEND_URL, {
           method: "POST",
           body: formData,
-          // You don't need to explicitly set 'Content-Type': 'multipart/form-data',
-          // as the browser will automatically set it, including the boundary parameter.
+
+          
         });
   
         if (!response.ok) {
